@@ -35,7 +35,8 @@
 (defn one-of [L]
   [(rand-nth L)] )
 
-;
+
+; utilisation
 (comment
   (sentence)
   (noun-phrase)
@@ -50,6 +51,92 @@
 
 
 ; ==== Chap 2.2 second part p61
+; Sentence-2 => Noun-Phrase-2 + Verb-Phrase-2
+; Noun-Phrase-2 => Article + Adj* + Noun + PP*
+; Verb-Phrase-2 => Verb + Noun-Phrase-2
+; Adj*=> 0, Adj + Adj*
+; PP*=> 0, PP + PP*
+; PP=> Prep + Noun-Phrase
+; Adj=> big, little, blue, green, . . .
+; Prep => to, in, by, with, . . .
+
+
+(declare sentence-2 verb-phrase-2 noun-phrase-2 adj* pp* pp adj prep)
+
+(defn sentence-2 []
+  (concat (noun-phrase-2) (verb-phrase-2)) )
+
+(defn verb-phrase-2 []
+  (concat (verb) (noun-phrase-2)) )
+
+(defn noun-phrase-2 []
+  (concat (article) (adj*) (noun) (pp*)) )
+
+(defn adj* []
+  (if (rand-nth [true false])
+    []
+    (concat (adj) (adj*)) ))
+
+(defn pp* []
+  (if (rand-nth [true false])
+    []
+    (concat (pp) (pp*)) ))
+
+(defn pp []
+  (concat (prep) (noun-phrase-2)) )
+
+(defn adj []
+  (one-of '[big little blue green]) )
+
+(defn prep []
+  (one-of '[to in by with]) )
+
+
+
+; utilisation
+(comment
+  (sentence-2)
+  )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

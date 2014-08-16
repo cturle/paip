@@ -7,7 +7,10 @@ Actually Chap 2.1, 2.2 part one are implemented
 Chapters :
 1 : Introduction to Lisp : not implemented.
 2 : A Sample Lisp Program
- 2.2 : A Straightforward Solution : part one implemented. Part two not implemented yet.
+ 2.2 : A Straightforward Solution : implemented.
+ 2.3 : A Rule-Based Solution : not yet implemented ...
+
+
 
 
 ## Usage
