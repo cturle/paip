@@ -50,7 +50,7 @@
   )
 
 
-; ==== Chap 2.2 second part p61
+; ==== Chap 2.2 second part
 ; Sentence-2 => Noun-Phrase-2 + Verb-Phrase-2
 ; Noun-Phrase-2 => Article + Adj* + Noun + PP*
 ; Verb-Phrase-2 => Verb + Noun-Phrase-2
@@ -99,14 +99,119 @@
   )
 
 
+; ==== Chap 2.3
+
+(def Simple-Grammar
+  "A grammar for a trivial subset of English."
+  '{Sentence     [[Noun-Phrase Verb-Phrase]]
+    Noun-Phrase  [[Article Noun]]
+    Verb-Phrase  [[Verb Noun-Phrase]]
+    Article      [the a]
+    Noun         [man ball woman table]
+    Verb         [hit took saw liked]
+    })
+
+(def Grammar
+  "The grammar used by generate. Initially, this is
+  Simple-Grammar, but we can switch to other grammars."
+  (atom Simple-Grammar) )
+
+(defn rewrites [category]
+  (get @Grammar category false) )
+
+(defn generate
+  "Generate a random sentence or phrase"
+  [phrase]
+  (cond (sequential? phrase)  (mapcat generate phrase)
+        (rewrites phrase)     (generate (rand-nth (rewrites phrase)))
+        :else                 [phrase] ))
+
+(comment
+  (use 'clojure.tools.trace)
+  (trace-ns 'paip.core)
+  (generate 'Sentence)
+  (generate 'Sentence)
+  (generate 'Noun-Phrase)
+  (generate 'Verb-Phrase)
+)
 
 
+(defn generate-2
+  "Generate a random sentence or phrase using let"
+   [phrase]
+  (if (sequential? phrase)
+    (mapcat generate-2 phrase)
+    (let [choices (rewrites phrase)]
+      (if choices
+        (generate-2 (rand-nth choices))
+        [phrase] ))))
 
 
+(comment
+  (trace-vars generate-2)
+  (generate-2 'Sentence)
+  (generate-2 'Sentence)
+)
 
 
+; === exercice 2.1
+
+(defn generate-3
+  "Generate a random sentence using cond calling rewrites only once"
+   [phrase]
+  (let [choices (rewrites phrase)]
+    (cond (sequential? phrase)  (mapcat generate-3 phrase)
+          choices               (generate-3 (rand-nth choices))
+          :else                 [phrase] )))
+
+(comment
+  (trace-vars generate-3)
+  (generate-3 'Sentence)
+)
 
 
+; === exercice 2.2
+
+(defn generate-4
+ "Write a version of generate that explicitly differentiates between terminal symbols (those with no rewrite rules)
+ and nonterminal symbols"
+  [phrase]
+  (generate-2 phrase) )
+
+
+; === personal exercice
+
+(def Explicit-Grammar
+  "A grammar for a trivial subset of English. ':and' means take them all in sequence. ':or' means take one of them.
+   You can even mix terminal and non-terminal symbols."
+  '{Sentence     [:and Noun-Phrase Verb-Phrase]
+    Noun-Phrase  [:and Article Noun]
+    Verb-Phrase  [:and Verb Noun-Phrase]
+    Article      [:or the a]
+    Noun         [:or man ball woman table]
+    Verb         [:or hit took saw liked]
+    Mix-Phrase   [:and Article Verb-Phrase]
+    })
+
+
+(defn generate-5
+  "generate an Explicit-Grammar phrase"
+  [phrase]
+  (if (sequential? phrase)
+    (case (first phrase)
+      :and (mapcat generate-5 (rest phrase))
+      :or  (one-of (rest phrase)) )
+    (if-let [rewrite (rewrites phrase)]
+      (generate-5 rewrite)
+      [phrase] )))
+
+(comment
+  (reset! Grammar Explicit-Grammar)
+  (generate-5 'Sentence)
+  (generate-5 'Verb-Phrase)
+  (generate-5 'Article)
+  (generate-5 'Mix-Phrase)
+  )
 
 
 
