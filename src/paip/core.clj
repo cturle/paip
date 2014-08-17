@@ -190,9 +190,11 @@
     Article      [:or the a]
     Noun         [:or man ball woman table]
     Verb         [:or hit took saw liked]
-    Mix-Phrase   [:and Article Verb-Phrase]
+    Mix-Phrase   [:or Article Verb-Phrase]
     })
 
+
+(declare one-of-2)
 
 (defn generate-5
   "generate an Explicit-Grammar phrase"
@@ -200,10 +202,16 @@
   (if (sequential? phrase)
     (case (first phrase)
       :and (mapcat generate-5 (rest phrase))
-      :or  (one-of (rest phrase)) )
+      :or  (generate-5 (one-of-2 (rest phrase))) )
     (if-let [rewrite (rewrites phrase)]
       (generate-5 rewrite)
       [phrase] )))
+
+(defn one-of-2
+  "one-of really should return only one value and not a list of that value."
+  [L]
+  (rand-nth L) )
+
 
 (comment
   (reset! Grammar Explicit-Grammar)
@@ -213,10 +221,47 @@
   (generate-5 'Mix-Phrase)
   )
 
+; === Chap 2.5
 
+(def Bigger-Grammar
+  "A grammar for a trivial subset of English. ':and' means take them all in sequence. ':or' means take one of them.
+   You can even mix terminal and non-terminal symbols."
+  '{Sentence     [:and Noun-Phrase Verb-Phrase]
+    Noun-Phrase  [:or [:and Article Adj* Noun PP*] Name Pronoun]
+    Verb-Phrase  [:and Verb Noun-Phrase PP*]
+    PP*          [:or :nothing [:and PP PP*]]
+    Adj*         [:or :nothing [:and Adj Adj*]]
+    PP           [:and Prep Noun-Phrase]
+    Prep         [:or to in by with on]
+    Adj          [:or big little blue green adiabatic]
+    Article      [:or the a]
+    Name         [:or Pat Kim Lee Terry Robin]
+    Noun         [:or man ball woman table]
+    Verb         [:or hit took saw liked]
+    Pronoun      [:or he she it these those that]
+    })
 
+(defn generate-6
+  "generate an Explicit-Grammar+ phrase with :nothing"
+  [phrase]
+  (if (sequential? phrase)
+    (case (first phrase)
+      :and (mapcat generate-6 (rest phrase))
+      :or  (generate-6 (one-of-2 (rest phrase))) )
+    (if (= phrase :nothing)
+      []
+      (if-let [rewrite (rewrites phrase)]
+        (generate-6 rewrite)
+        [phrase] ))))
 
-
+(comment
+  (reset! Grammar Bigger-Grammar)
+  (use 'clojure.tools.trace)
+  (trace-vars generate-6)
+  (generate-6 'PP*)
+  (generate-6 'Sentence)
+  (generate-6 :nothing)
+)
 
 
 

@@ -6,15 +6,13 @@ Actually Chap 2.1, 2.2 and 2.3 are implemented.
 
 Chapters :
 
-<ol>1 : Introduction to Lisp : **not implemented**.</ol>
-
-<ol>2 : A Sample Lisp Program
-
-<ol>2.2 : A Straightforward Solution : **implemented**.</ol>
-<ol>2.3 : A Rule-Based Solution : **implemented**.</ol>
-<ol>2.4 : Two Paths to Follow : **to come**</ol>
-</ol>
-
+1. : Introduction to Lisp : **not implemented**.
+2. : A Sample Lisp Program
+  2.2. : A Straightforward Solution : **implemented**.
+  2.3. : A Rule-Based Solution : **implemented**.
+  2.4 : Two Paths to Follow : nothing
+  2.5 : Changing the Grammar without Changing the Program : **implemented**
+  2.6 : Using the Same Data for Several Programs : **to come**
 
 Last updated : 2014-08-16
 
