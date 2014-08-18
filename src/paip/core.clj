@@ -178,7 +178,7 @@
  "Write a version of generate that explicitly differentiates between terminal symbols (those with no rewrite rules)
  and nonterminal symbols"
   [phrase]
-  (cond (sequential? phrase)    (mapcat generate-3 phrase)
+  (cond (sequential? phrase)    (mapcat generate-4 phrase)
         (non-terminal? phrase)  (generate-4 (rand-nth (rewrites phrase)))
         :else                   [phrase] ))
 
@@ -218,6 +218,7 @@
     (if-let [rewrite (rewrites phrase)]
       (generate-5 rewrite)
       [phrase] )))
+
 
 (defn one-of-2
   "one-of really should return only one value and not a list of that value."
