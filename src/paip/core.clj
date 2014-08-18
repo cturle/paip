@@ -172,11 +172,23 @@
 
 ; === exercice 2.2
 
+(declare non-terminal?)
+
 (defn generate-4
  "Write a version of generate that explicitly differentiates between terminal symbols (those with no rewrite rules)
  and nonterminal symbols"
   [phrase]
-  (generate-2 phrase) )
+  (cond (sequential? phrase)    (mapcat generate-3 phrase)
+        (non-terminal? phrase)  (generate-4 (rand-nth (rewrites phrase)))
+        :else                   [phrase] ))
+
+(defn non-terminal? [phrase]
+  (if (rewrites phrase) true false) )
+
+(comment
+  (trace-vars generate-4)
+  (generate-4 'Sentence)
+)
 
 
 ; === personal exercice
