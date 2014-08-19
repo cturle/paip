@@ -354,15 +354,44 @@
   (use 'clojure.tools.trace)
   (trace-vars generate-tree-2)
   (reset! Grammar Test-Grammar)
-  (generate-tree-2 'Sentence)
+  (first (generate-tree-2 'Sentence))
   (reset! Grammar Bigger-Explicit-Grammar)
   (generate-tree-2 :nothing)
   (generate-tree-2 'Noun-Phrase)
   (generate-tree-2 'PP)
   (generate-tree-2 'PP*)
-  (generate-tree-2 'Sentence)
+  (first (generate-tree-2 'Sentence))
 )
 
+; === generate all possible rewrites of a phrase
+
+(declare combine-all)
+
+(defn generate-all
+  "Generate a list of all possible expansions of this phrase."
+  [phrase]
+  (cond (= phrase [])          (list nil)
+        (sequential? phrase)   (combine-all (generate-all (first phrase))
+                                            (generate-all (rest phrase)) )
+        (rewrites phrase)      (mapcat generate-all (rewrites phrase))
+        true                   (list (list phrase)) ))
+
+(defn combine-all
+"Return a list of lists formed by appending a y to an x.
+E.g., (combine-all '((a) (b)) '((1) (2)))
+-> ((A 1) (B 1) (A 2) (B 2))."
+  [xlist ylist]
+  (mapcat (fn [y] (map (fn [x] (concat x y)) xlist) )
+          ylist ))
+
+(comment
+  (combine-all '((a) (b)) '((1) (2)))
+  (reset! Grammar Simple-Grammar)
+  (generate-all 'Article)
+  (generate-all 'Noun)
+  (generate-all 'Noun-Phrase)
+  (count (generate-all 'Sentence))
+  )
 
 
 
