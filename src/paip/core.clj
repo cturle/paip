@@ -237,7 +237,39 @@
 ; === Chap 2.5
 
 (def Bigger-Grammar
-  "A grammar for a trivial subset of English. ':and' means take them all in sequence. ':or' means take one of them.
+  "A grammar for a bigger subset of English."
+  '{Sentence     [[Noun-Phrase Verb-Phrase]]
+    ; notice below that '[Name]' is used instead of 'Name'. This implicitly tag Name as non-terminal.
+    ; the program will be easier BUT users have to know this trick.
+    ; check next part on how to solve this (PB1)
+    Noun-Phrase  [[Article Adj* Noun PP*] [Name] [Pronoun]]
+    Verb-Phrase  [[Verb Noun-Phrase PP*]]
+    PP*          [[] [PP PP*]]
+    Adj*         [[] [Adj Adj*]]
+    PP           [[Prep Noun-Phrase]]
+    ; here 'to' and not '[to]' because 'to' should be handled as terminal.
+    Prep         [to in by with on]
+    Adj          [big little blue green adiabatic]
+    Article      [the a]
+    Name         [Pat Kim Lee Terry Robin]
+    Noun         [man ball woman table]
+    Verb         [hit took saw liked]
+    Pronoun      [he she it these those that]
+    })
+
+(comment
+  (reset! Grammar Bigger-Grammar)
+  (trace-vars generate-4)
+  (generate-4 'Sentence)
+  (generate-4 'PP*)
+  (generate-4 'Article)
+  )
+
+
+; === with explicit grammar
+
+(def Bigger-Explicit-Grammar
+  "A grammar for a bigger subset of English. ':and' means take them all in sequence. ':or' means take one of them.
    You can even mix terminal and non-terminal symbols."
   '{Sentence     [:and Noun-Phrase Verb-Phrase]
     Noun-Phrase  [:or [:and Article Adj* Noun PP*] Name Pronoun]
@@ -254,8 +286,14 @@
     Pronoun      [:or he she it these those that]
     })
 
+(def Test-Grammar
+  ""
+  '{Sentence     [:or Article Article]
+    Article      [:or the a]
+    })
+
 (defn generate-6
-  "generate an Explicit-Grammar+ phrase with :nothing"
+  "generate a Bigger-Explicit-Grammar phrase."
   [phrase]
   (if (sequential? phrase)
     (case (first phrase)
@@ -268,18 +306,15 @@
         [phrase] ))))
 
 (comment
-  (reset! Grammar Bigger-Grammar)
   (use 'clojure.tools.trace)
   (trace-vars generate-6)
-  (generate-6 'PP*)
+  (reset! Grammar Test-Grammar)
   (generate-6 'Sentence)
+  (reset! Grammar Bigger-Explicit-Grammar)
+  (generate-6 'PP*)
   (generate-6 :nothing)
+  (generate-6 'Sentence)
 )
-
-
-
-
-
 
 
 
