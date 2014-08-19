@@ -331,6 +331,37 @@
   (generate-tree 'Sentence)
  )
 
+; with explicit-grammar
+
+; since the syntax is more explicit, it is simpler to change the code.
+; We just need to change the non-terminal part. Instead of returning generated values, we have to add the non-terminal name.
+; this is done by the cons. Then, don't forget that we must return values and not a value. So we 'list' the value.
+
+(defn generate-tree-2
+  "Generate a random sentence or phrase, with a complete parse tree, from an explicit grammar."
+  [phrase]
+  (if (sequential? phrase)
+    (case (first phrase)
+      :and (mapcat generate-tree-2 (rest phrase))
+      :or  (generate-tree-2 (one-of-2 (rest phrase))) )
+    (if (= phrase :nothing)
+      []
+      (if-let [rewrite (rewrites phrase)]
+        (list (cons phrase (generate-tree-2 rewrite)))
+        [phrase] ))))
+
+(comment
+  (use 'clojure.tools.trace)
+  (trace-vars generate-tree-2)
+  (reset! Grammar Test-Grammar)
+  (generate-tree-2 'Sentence)
+  (reset! Grammar Bigger-Explicit-Grammar)
+  (generate-tree-2 :nothing)
+  (generate-tree-2 'Noun-Phrase)
+  (generate-tree-2 'PP)
+  (generate-tree-2 'PP*)
+  (generate-tree-2 'Sentence)
+)
 
 
 
