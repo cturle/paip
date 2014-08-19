@@ -316,6 +316,21 @@
   (generate-6 'Sentence)
 )
 
+; === Chap 2.6
+
+(defn generate-tree [phrase]
+"Generate a random sentence or phrase, with a complete parse tree."
+  (cond (sequential? phrase) (map generate-tree phrase)
+        (rewrites phrase)    (cons phrase (generate-tree (rand-nth (rewrites phrase))))
+        true                 (list phrase) ))
+
+(comment
+  (reset! Grammar Bigger-Grammar)
+  (use 'clojure.tools.trace)
+  (trace-vars generate-tree)
+  (generate-tree 'Sentence)
+ )
+
 
 
 

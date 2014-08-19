@@ -12,7 +12,7 @@ Chapters :
   2.3. : A Rule-Based Solution : **implemented**.
   2.4 : Two Paths to Follow : nothing
   2.5 : Changing the Grammar without Changing the Program : **implemented**
-  2.6 : Using the Same Data for Several Programs : **to come**
+  2.6 : Using the Same Data for Several Programs : **en cours**
 
 Last updated : 2014-08-16
 
