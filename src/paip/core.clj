@@ -467,7 +467,14 @@ E.g., (combine-all '((a) (b)) '((1) (2)))
   )
 
 
+; ===  Exercice 2.4
 
+; (cross-product + [1 2 3] [10 20 30])
+; (cross-product list '[a b c d e f g h] [1 2 3 4 5 6 7 8])
+(defn cross-product
+  "Return a list of all (F x y) values."
+  [F xlist ylist]
+  (for [x xlist, y ylist] (F x y)))
 
 
 
