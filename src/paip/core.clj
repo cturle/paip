@@ -1,4 +1,5 @@
-(ns paip.core)
+(ns paip.core
+    (:require [clojure.math.combinatorics :as combo]))
 
 ; ==== Chap 2.1
 
@@ -202,7 +203,6 @@
     Article      [:or the a]
     Noun         [:or man ball woman table]
     Verb         [:or hit took saw liked]
-    Mix-Phrase   [:or Article Verb-Phrase]
     })
 
 
@@ -381,8 +381,7 @@
 E.g., (combine-all '((a) (b)) '((1) (2)))
 -> ((A 1) (B 1) (A 2) (B 2))."
   [xlist ylist]
-  (mapcat (fn [y] (map (fn [x] (concat x y)) xlist) )
-          ylist ))
+  (for [y ylist, x xlist] (concat x y)) )
 
 (comment
   (combine-all '((a) (b)) '((1) (2)))
@@ -391,14 +390,81 @@ E.g., (combine-all '((a) (b)) '((1) (2)))
   (generate-all 'Noun)
   (generate-all 'Noun-Phrase)
   (count (generate-all 'Sentence))
+  (reset! Grammar '{Test [[Article] [Article]], Article [a the]})
+  ; note the doublon in the below : ((a) (the) (a) (the))
+  (generate-all 'Test)
+  ; note that we can't call Test rewriting : ((a a) (the a) (a the) (the the))
+  (generate-all '[[Article] [Article]])
   )
 
+; === §2.6 : generate-all / expressive grammar
+
+; to better understand the program, we will clarify the terminology by giving an other semantic.
+; New Semantic Try to view the grammar as the definition of set-of-phrase.
+; in fact generate-all can be viewed as the fonction 'extension-of' which returns the extension of a set-of-phrase SP
+; given by intension.
 
 
+(declare merge-phrase merge-phrase-L cartesian-product-L)
+
+(defn extension-of
+ "returns the extension of a set-of-phrase SP given by intension.
+  phrases are represented by list of word. Ex: [a cat in the dark]
+  extension of a set-of-phrase are represented by a set of phrases. Ex: #{[a cat in the dark] [a dog in the light]}
+  set-of-phrase are represented intensionaly by :
+  - :nothing : the set of empty phrase. (extension-of :nothing) = #{[]}.
+  - a terminal : the set of phrase with only the terminal as word. Ex: (extension-of 'bag) = #{[bag]}
+  - a non-terminal : the set of phrase of its rewrite.
+  - (:or & ?List-of-set-of-phrase) : union of set-of-phrase.
+    Ex: (extension-of '(:or bag ball)) = union of #{[bag]} #{[ball]} = #{[bag] [ball]}
+  - (:and & ?List-of-set-of-phrase)  :
+    {(merge-phrase-L ?List-of-phrase) | ?List-of-phrase e (cartesian-product-L ?List-of-set-of-phrase)}"
+
+  [SP]
+  (if (sequential? SP)
+    (case (first SP)
+      ; more closer of the definition
+      :and (set (for [?List-of-phrase (cartesian-product-L (map extension-of (rest SP)))]
+                   (merge-phrase-L ?List-of-phrase) ))
+      ; more compact :
+      ; :and (set (map merge-phrase-L (cartesian-product-L (map extension-of (rest SP)))))
+      :or  (apply clojure.set/union (map extension-of (rest SP))) )
+    (if (= SP :nothing)
+      #{[]}
+      (if-let [rewrite (rewrites SP)]
+        (extension-of rewrite)
+        #{[SP]} ))))
 
 
+; (merge-phrase '[the] '[ball])
+(def merge-phrase
+  "merge-phrase merge two phrases P1 and P2. Ex: (merge-phrase '[the] '[ball]) = [the ball]"
+  concat)
+
+; (merge-phrase-L '[[the] [ball] [] [is red]])
+(defn merge-phrase-L
+  "merge-phrase-L is a list-argument-generalisation of merge-phrase. This means that while merge-phrase takes 2 arguments
+   merge-phrase-L can take a list of argument. so (merge-phrase-L ?L) = (reduce merge-phrase ?L)
+   (merge-phrase-L '[[the] [ball] [] [is red]]) = [the ball is red]"
+  [LP]
+  (reduce merge-phrase LP))
+
+; (cartesian-product-L '[#{x1 x2} #{y1 y2} #{z1 z2}])
+(defn cartesian-product-L
+  "returns the cartesian product of a list-of-set ?LS"
+  [LS]
+  (set (apply combo/cartesian-product LS)) )
 
 
+(comment
+  (reset! Grammar Explicit-Grammar)
+  (extension-of 'Article)
+  (extension-of 'Noun)
+  (extension-of 'Noun-Phrase)
+  (count (extension-of 'Sentence))
+  ; note below that no doublon are generated and that we can call rewriting directly : #{[the] [a]}
+  (extension-of '[:or Article Article])
+  )
 
 
 
