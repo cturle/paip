@@ -2,28 +2,38 @@
 
 A Clojure library designed to define in clojure what you find in PAIP (Paradigms Of Artificial Intelligence Programming - Case Studies In Common Lisp, Peter Norvig)
 
-Actually Chap 2.1, 2.2 and 2.3 are implemented.
+Actually Chapter 2 is implemented.
 
 Chapters :
 
-1. : Introduction to Lisp : **not implemented**.
+1. : Introduction to Lisp : *lisp specific*.
 2. : A Sample Lisp Program
   2.2. : A Straightforward Solution : **implemented**.
   2.3. : A Rule-Based Solution : **implemented**.
-  2.4 : Two Paths to Follow : nothing
-  2.5 : Changing the Grammar without Changing the Program : **implemented**
-  2.6 : Using the Same Data for Several Programs : **en cours**
+  2.4. : Two Paths to Follow : nothing
+  2.5. : Changing the Grammar without Changing the Program : **implemented**
+  2.6. : Using the Same Data for Several Programs : **implemented**
+3. : Overview of Lisp : *lisp specific*
+4. : GPS: The General Problem Solver
 
-Last updated : 2014-08-16
+
+
+Last updated : 2014-08-21
 
 ## Usage
 
-Using Light Table 0.6.7 / Leinengen 2.0
+Tools used are listed below. All in this project assume you are using them too :
+- Light Table 0.6.7 : code editor
+- Leinengen 2.0 : clojure project management
+- git / github : source versionning / repository
+
+
+## running Chapter 2 programs
 
 1. clone this repository
-2. open src/paip/core.clj
+2. open repl/paip/chap2.clj
 3. eval the buffer (ctrl+shift+enter)
-4. eval lines in comment sections
+4. eval lines in comment sections from the start
 
 
 ## License
