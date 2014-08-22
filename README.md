@@ -2,7 +2,7 @@
 
 A Clojure library designed to define in clojure what you find in PAIP (Paradigms Of Artificial Intelligence Programming - Case Studies In Common Lisp, Peter Norvig)
 
-Actually Chapter 2 is implemented.
+Actually Chapter 2 and Chapter 4 (GPS1) are implemented.
 
 Chapters :
 
@@ -15,7 +15,7 @@ Chapters :
   2.6. : Using the Same Data for Several Programs : **implemented**
 3. : Overview of Lisp : *lisp specific*
 4. : GPS: The General Problem Solver
-
+  4.1 => 4.4. : GPS1 : **implemented**
 
 
 Last updated : 2014-08-21
@@ -33,7 +33,14 @@ Tools used are listed below. All in this project assume you are using them too :
 1. clone this repository
 2. open repl/paip/chap2.clj
 3. eval the buffer (ctrl+shift+enter)
-4. eval lines in comment sections from the start
+4. eval lines in comment sections
+
+## running GPS1 program (§4.1 => §4.5)
+
+1. clone this repository
+2. open repl/paip/gps1.clj
+3. eval the buffer (ctrl+shift+enter)
+4. eval lines in comment sections
 
 
 ## License
