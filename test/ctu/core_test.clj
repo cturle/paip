@@ -3,6 +3,23 @@
             [ctu.core :refer :all]))
 
 
+(def +CTXT1+ {:c1 {:val* #{1 2}}})
+
+(deftest cget-tests
+  (binding [*context* +CTXT1+]
+    (testing "cget"
+      (is (= (cget :c1) {:val* #{1 2}}))
+      (is (try (cget :c2) false (catch Exception e true)))
+      )))
+
+(deftest cget*-tests
+  (binding [*context* +CTXT1+]
+    (testing "cget*"
+      (is (= (cget* :c1 :val*) #{1 2}))
+      (is (= (cget* :c1 :val*-unknown) #{}))
+      (is (try (cget* :c2 :val*) false (catch Exception e true)))
+      )))
+
 (defn div-pre? [X Y] (and (number? X)
                           (number? Y)
                           (not= Y 0) ))
