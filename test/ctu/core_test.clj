@@ -16,9 +16,18 @@
   (binding [*context* +CTXT1+]
     (testing "cget*"
       (is (= (cget* :c1 :val*) #{1 2}))
-      (is (= (cget* :c1 :val*-unknown) #{}))
+      (is (let [R (cget* :c1 :val*-unknown)] (and (set? R) (= #{} R))))
       (is (try (cget* :c2 :val*) false (catch Exception e true)))
       )))
+
+(deftest cget-v-tests
+  (binding [*context* +CTXT1+]
+    (testing "cget-v"
+      (is (= (cget-v :c1 :val*) #{1 2}))
+      (is (let [R (cget-v :c1 :val*-unknown)] (and (vector? R) (= [] R))))
+      (is (try (cget-v :c2 :val*) false (catch Exception e true)))
+      )))
+
 
 (defn div-pre? [X Y] (and (number? X)
                           (number? Y)

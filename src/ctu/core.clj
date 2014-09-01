@@ -16,6 +16,13 @@
  [CM K]
  (get (cget CM) K #{}) )
 
+(defn cget-v
+"[Any CM, Any K] -> Vector
+ Returns the value mapped to key K in the contextual map CM. [] is returned as default-value.
+ Throw an exception if CM is not found."
+ [CM K]
+ (get (cget CM) K []) )
+
 
 ; Return = {:all-pre-ok? Boolean, :out Any, :bad-pre Any}
 
