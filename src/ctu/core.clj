@@ -4,10 +4,15 @@
 (def ^:dynamic *context* {})
 
 (defn cget
-"Any CM -> (or nil Map). Returns the map attached to CM in the context, or nil if not found.
+"Any CM -> (or nil Map).
+  Returns the map attached to CM in the context, or nil if not found.
+ [Any CM, Any K] -> (or nil Any).
+  Returns the value mapped to key K in the contextual map CM. nil is returned as default-value.
  Throw an exception if CM is not found."
- [CM]
- (if-let [M (get *context* CM)] M (throw (str "cget: concept not found : " CM))) )
+ ([CM]
+  (if-let [M (get *context* CM)] M (throw (Exception. (str "cget: concept not found : " CM)))) )
+ ([CM K]
+  (get (cget CM) K) ))
 
 (defn cget*
 "[Any CM, Any K] -> Set

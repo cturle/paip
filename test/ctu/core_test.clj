@@ -3,14 +3,17 @@
             [ctu.core :refer :all]))
 
 
-(def +CTXT1+ {:c1 {:val* #{1 2}}})
+(def +CTXT1+ {:c1 {:val* #{1 2}, :val 3}})
 
 (deftest cget-tests
   (binding [*context* +CTXT1+]
-    (testing "cget"
-      (is (= (cget :c1) {:val* #{1 2}}))
-      (is (try (cget :c2) false (catch Exception e true)))
-      )))
+    (testing "CASE : cget with one argument"
+      (is (= (cget :c1) (get +CTXT1+ :c1)))
+      (is (try (cget :c2) false (catch Exception e true))) )
+    (testing "CASE : cget with two arguments"
+      (is (= (cget :c1 :val) 3))
+      (is (nil? (cget :c1 :val2)))
+      (is (try (cget :c2 :val) false (catch Exception e true))) )))
 
 (deftest cget*-tests
   (binding [*context* +CTXT1+]
