@@ -98,7 +98,6 @@
                      :apply-op       #({:isa    :Node
                                         :cond*  (apply-op (cget* %1 :cond*) (cget %2))
                                        })
-                     :same-node?     #(= (cget* %1 :cond*) (cget* %2 :cond*))
                     }
                N0   {:isa    :Node
                      :cond*  IC*

@@ -44,5 +44,32 @@
             (recur (F X Y) (rest L)) ))))))
 
 
+(defn choice-v-computer
+  "[(State -> Choice) S-C, ([State Choice] -> State) SC-S, (State -> Boolean) FS?] -> (State S -> vector-of Choice C*)
+  Returns a fonction S-C* which returns a sequence of choice from an initial State.
+  "
+  [S-C, SC-S, FS?]
+  )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
