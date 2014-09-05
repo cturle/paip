@@ -46,9 +46,30 @@
     (is (= [8 :x] (:bad-pre ((reduce-pre / div-pre?) 8 [1 :x 4]))))
     ))
 
+; (choice-v-tests)
+(deftest choice-v-tests
+  (testing "CASE : nominal"
+    (is (= [inc inc] (choice-v 1 (fn [S] inc) (fn [S C] (C S)) (fn [S] (= 3 S))))) ))
+
+
 
 (comment
   (run-tests)
   )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

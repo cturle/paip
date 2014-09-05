@@ -44,12 +44,17 @@
             (recur (F X Y) (rest L)) ))))))
 
 
-(defn choice-v-computer
-  "[(State -> Choice) S-C, ([State Choice] -> State) SC-S, (State -> Boolean) FS?] -> (State S -> vector-of Choice C*)
-  Returns a fonction S-C* which returns a sequence of choice from an initial State.
-  "
-  [S-C, SC-S, FS?]
-  )
+(defn choice-v
+  "[State S0, (State -> Choice) S-C, ([State Choice] -> State) SC-S, (State -> Boolean) FS?] -> vector-of Choice C-v
+  Returns a sequence of choice from an initial State S0, a Choice chooser, a new state builder SC-S and
+  a final state predicate FS?."
+  [S0, S-C, SC-S, FS?]
+  (loop [S S0, C-v []]
+    (if (FS? S)
+      C-v
+      (let [C  (S-C S)
+            NS (SC-S S C)]
+        (recur NS (conj C-v C)) ))))
 
 
 
