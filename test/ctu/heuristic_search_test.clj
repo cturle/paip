@@ -30,7 +30,7 @@
 
 ; (init-context-tests)
 (deftest init-context-tests
-  (binding [*context* +CTXT+]
+  (binding [*context* (atom +CTXT+)]
     (testing "CASE : adding init-node N0 to graph :node*"
       (is (init-context :PB))
       (is (= #{:N0} (cget :G :node*)))
@@ -38,7 +38,7 @@
 
 ; (get-solution-tests)
 (deftest get-solution-tests
-  (binding [*context* +CTXT+]
+  (binding [*context* (atom +CTXT+)]
     (init-context :PB)
     (testing "CASE : none"
       (is (nil? (get-solution :PB))) )
@@ -51,7 +51,7 @@
 
 ; (potential-node-operator-v-tests)
 (deftest potential-node-operator-v-tests
-  (binding [*context* +CTXT+]
+  (binding [*context* (atom +CTXT+)]
     (init-context :PB)
     (testing "CASE : nominal"
       (is (= #{[:N0 :A1] [:N0 :A2]} (set (potential-node-operator-v :PB))))
@@ -59,7 +59,7 @@
 
 ; (choose-next-node-and-operator-tests)
 (deftest choose-next-node-and-operator-tests
-  (binding [*context* +CTXT+]
+  (binding [*context* (atom +CTXT+)]
     (init-context :PB)
     (testing "CASE : nominal"
       (let [{:keys [success node operator]} (choose-next-node-and-operator :PB)]
@@ -68,7 +68,7 @@
         (is (contains? (cget :D :domain-op*) operator)) ))
     (testing "CASE : node/operator not already applied"
       (add-op-apply :PB {:node :N0, :op :A1})
-      (set! *context* (assoc-in *context* [:D :apply-op-pre?] #(and (= %1 :N0) (= %2 :A1))))
+      (swap! *context* assoc-in [:D :apply-op-pre?] #(and (= %1 :N0) (= %2 :A1)))
       (let [R (choose-next-node-and-operator :PB)]
         (is (false? (:success R)) ))
       )))
@@ -76,7 +76,7 @@
 
 ; (find-node-tests)
 (deftest find-node-tests
-  (binding [*context* +CTXT+]
+  (binding [*context* (atom +CTXT+)]
     (init-context :PB)
     (testing "CASE : nominal"
       (is (= :N0 (find-node :G {:value 1})))
@@ -85,7 +85,7 @@
 
 ; (add-node-tests)
 (deftest add-node-tests
-  (binding [*context* +CTXT+]
+  (binding [*context* (atom +CTXT+)]
     (init-context :PB)
     (testing "CASE : nominal"
       (let [N (add-node :G {:value 2})]
@@ -95,7 +95,7 @@
 
 ; (add-op-apply-tests)
 (deftest add-op-apply-tests
-  (binding [*context* +CTXT+]
+  (binding [*context* (atom +CTXT+)]
     (init-context :PB)
     (testing "CASE : nominal"
       (let [OA (add-op-apply :PB {:node :N0, :op :A1, :out :N1})]
@@ -105,7 +105,7 @@
 
 ; (apply-operator-on-node-tests)
 (deftest apply-operator-on-node-tests
-  (binding [*context* +CTXT+]
+  (binding [*context* (atom +CTXT+)]
     (init-context :PB)
       (testing "CASE : nominal"
         (let [R (apply-operator-on-node :PB :A1 :N0)]
@@ -120,24 +120,31 @@
                 (is (= :N0 N0)) )))))))
 
 
+;(def +context+ (atom {}))
+
 ; (heuristic-search-tests)
 (deftest heuristic-search-tests
-  (binding [*context* +CTXT+]
-    (testing "CASE : one step from solution"
-      (is (solve-by-heuristic-search :PB))
-      (is (= [:A1] (cget-v :PB :op-v)))
-      )))
-
+  (let [SOLVE (timeout-fn solve-by-heuristic-search 1000)]
+    (testing "CASE : 0 step from solution"
+      (binding [*context* (atom (assoc-in +CTXT+ [:PB :pred] #(= 1 (cget % :value))))]
+        (is (SOLVE :PB))
+        (is (= [] (cget-v :PB :op-v)))
+        ))
+    (testing "CASE : 1 step from solution"
+      (binding [*context* (atom +CTXT+)]
+        (is (SOLVE :PB))
+        (is (= [:A1] (cget-v :PB :op-v)))
+        ))
+    (testing "CASE : 4 step from solution"
+      (binding [*context* (atom (assoc-in +CTXT+ [:PB :pred] #(= 5 (cget % :value))))]
+        (is (SOLVE :PB))
+        (is (= [:A1 :A1 :A1 :A1] (cget-v :PB :op-v)))
+       ))))
 
 
 (comment
 
   (run-tests)
-
-  (clojure.pprint/pprint @+context+)
-
-  (require 'clojure.inspector)
-  (clojure.inspector/inspect-tree @+context+)
 
   )
 

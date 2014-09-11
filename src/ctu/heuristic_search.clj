@@ -1,26 +1,24 @@
 (ns ctu.heuristic-search
-  (:require [ctu.core :refer :all]
-            [ctu.graph :refer [find-path]]) )
+  (:require [ctu.core :refer :all]) )
 
-(def +context+ (atom {}))
-
-(declare init-context search-status? choose-next-node-and-operator apply-operator-on-node)
+(declare init-context get-solution search-status? choose-next-node-and-operator apply-operator-on-node)
 
 (defn solve-by-heuristic-search
-  "solve a Search-Space-Problem PB with heuristic search.
-   PB -> boolean
-  Returns false if no solution is found.
-  Returns true if a solution N1 is found.
+  "Find-Node-of-Generative-Graph-Problem PB -> Boolean
+   Solve PB.
+   Returns false if no solution is found.
+   Returns true if a solution N1 is found.
    In this case, (= (cget PB :solution) N1) and (= (cget-v PB :op-v) OP*)
    where OP* are the operations to apply in order from N0 to reach N1.
-   N0 is the initial Node : (= N0 :start-node (:gen-def (:graph PB)))
-  Used algorithm is :
-   (while solution-not-found
-      choose-next-node-and-operator
-      apply-operator-on-node )"
+   where N0 is the initial Node. (= N0 (cget (cget (cget PB :graph) :gen-def) :start-node))
+   Used algorithm is :
+    (while solution-not-found
+       choose-next-node-and-operator
+       apply-operator-on-node )"
   [PB]
   (loop [State :init, Args {}]
-    (reset! +context+ *context*) ; just to get infos after the run.
+    (when (.. Thread currentThread isInterrupted)
+      (throw (ex-info "interruption in solve-by-heuristic-search" {:type :interruption, :state State, :Args Args})) )
     (case State
       :init    (do (init-context PB)
                    (recur :check Args) )
@@ -35,11 +33,16 @@
                      (if-not (:success R)
                        false
                        (recur :check Args) )))
-      :path    (do (let [G       (cget PB :graph)
-                         P       (find-path G (cget (cget G :gen-def) :start-node) (:solution Args))
-                         NPBPPS  (assoc (cget PB) :solution (:solution Args), :op-v P)]
-                     (set! *context* (assoc *context* PB NPBPPs))
+      :path    (do (let [OA-v    (cget-v PB :op-apply-v)
+                         N0      (cget PB :start-node)
+                         Nn      (:solution Args)
+                         RP      (choice-v Nn
+                                           (fn [S]   (first (filter #(= (cget % :out) S) OA-v)))
+                                           (fn [S C] (cget C :node))
+                                           (fn [S]   (= S N0)) )]
+                     (swap! *context* assoc-in [PB :op-v] (mapv #(cget % :op) (rseq RP)))
                      true )))))
+
 
 (defn init-context
   "Add elaboration informations from the init state."
@@ -47,20 +50,26 @@
   (let [G   (cget PB :graph)
         N0  (cget (cget G :gen-def) :start-node)
         NG  (merge (cget G)  {:node* #{N0}})
-        NPB (merge (cget PB) {:op-apply-v []}) ]
-    (set! *context* (merge *context* {PB NPB, G NG}))
-    true ))
+        NPB (merge (cget PB) {:op-apply-v [], :start-node N0}) ]
+    (swap! *context* merge {PB NPB, G NG}) ))
 
 (defn get-solution
-  "Returns one node N tq ((:pred PB) N) else returns nil"
+  "Returns one node N s.t. ((:pred PB) N) else returns nil.
+   Memorize solution in PB"
   [PB]
-  (first (for [N (cget* (cget PB :graph) :node*) :when ((cget PB :pred) N)]
-           N )))
+  (if-let [S (cget PB :solution)]
+    S
+    (let [S (first (for [N (cget* (cget PB :graph) :node*) :when ((cget PB :pred) N)]
+                        N ))]
+      (when S
+        (swap! *context* assoc-in [PB :solution] S) )
+        S )))
+
 
 (declare potential-node-operator-v)
 
 (defn choose-next-node-and-operator
-  "Returns {:success true, :node N, :operator OP} where N, OP are the best candidate to find a solution of PB
+  "Returns {:success true, :node N, :operator OP} where N, OP are the best candidate to apply next
    Returns {:success false} if no candidate can be found."
   [PB]
   (let [NO-v (potential-node-operator-v PB)]
@@ -114,10 +123,9 @@
   N is a new Node added to the Graph G."
   [G NPPs]
   (let [N   (gensym "Node"),
-        NN  (merge NPPs {:isa :Node})
-        NG  (update-in (cget G) [:node*] conj N)
-        NC  (assoc *context* G NG, N NN)]
-    (set! *context* NC)
+        NN  (assoc NPPs :isa :Node)
+        NG  (update-in (cget G) [:node*] conj N) ]
+    (swap! *context* assoc G NG, N NN)
     N ))
 
 (defn add-op-apply
@@ -127,31 +135,8 @@
   (let [OA  (gensym "Op-Apply")
         NOA (merge OAPPs {:isa :Op-Apply})
         NPB (update-in (cget PB) [:op-apply-v] conj OA) ]
-    (set! *context* (merge *context* {PB NPB, OA NOA}))
+    (swap! *context* assoc PB NPB, OA NOA)
     OA ))
 
 
-(comment
-  (let [CTXT1  (zipmap (repeatedly gensym) OP*1)
-        [N0, D, G, PB]  (take 4 (repeatedly gensym))
-        CTXT2 {PB   {:isa    :Find-Node-of-Generative-Graph-Problem
-                     :graph  G
-                     :pred   #(set/subset? GC* (cget* % :cond*))
-                    }
-               G    {:isa      :Graph
-                     :gen-def  D
-                    }
-               D    {:isa            :Graph-Generative-Definition
-                     :start-node     N0
-                     :domain-op*     (set (keys CTXT1))
-                     :apply-op-pre?  #(apply-op-pre? (cget* %1 :cond*) (cget %2))
-                     :apply-op       #({:isa    :Node
-                                        :cond*  (apply-op (cget* %1 :cond*) (cget %2))
-                                       })
-                    }
-               N0   {:isa    :Node
-                     :cond*  IC*
-                    }
-               }]
 
-)
