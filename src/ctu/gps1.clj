@@ -1,10 +1,10 @@
-;;;; File gps1_ctu.clj: First version of GPS (General Problem Solver)
+;;;; File ctu/gps1.clj: First version of GPS (General Problem Solver)
 ; Christophe Turle implementation from the same specification
 
-(ns paip.gps1-ctu
+(ns ctu.gps1
   (:require [clojure.set :as set]
             [ctu.core :refer :all]
-            [ctu.heuristic-search :refer :all] ))
+            [ctu.heuristic-search :refer [solve-by-heuristic-search]] ))
 
 ;;; === § 4.1 => §4.4 : GPS1 from CTU
 ;;; GPS isa conceptual representation of problems and a 'means-ends' implementation to solve these problems
@@ -81,31 +81,35 @@
   post : (or (false? OP*2)
              (and (every? [OPi OP*2] (set/contains? OP*1 OPi))
                   (set/superset? (reduce apply-op IC* OP*2) GC*) ))"
-  [IC* GC* OP*1]
-  (let [CTXT1  (zipmap (repeatedly gensym) OP*1)
-        [N0, D, G, PB]  (take 4 (repeatedly gensym))
-        CTXT2 {PB   {:isa    :Find-Node-of-Generative-Graph-Problem
-                     :graph  G
-                     :pred   #(set/subset? GC* (cget* % :cond*))
-                    }
-               G    {:isa      :Graph
-                     :gen-def  D
-                    }
-               D    {:isa            :Graph-Generative-Definition
-                     :start-node     N0
-                     :domain-op*     (set (keys CTXT1))
-                     :apply-op-pre?  #(apply-op-pre? (cget* %1 :cond*) (cget %2))
-                     :apply-op       #({:isa    :Node
-                                        :cond*  (apply-op (cget* %1 :cond*) (cget %2))
-                                       })
-                    }
-               N0   {:isa    :Node
-                     :cond*  IC*
-                     :def    [:the D :start-node]
-                    }
-               }]
-    (binding [*context* (merge CTXT1 CTXT2)]
+  ([IC* GC* OP*1]
+    (gps IC* GC* OP*1 (atom nil)) )
+  ([IC* GC* OP*1 CTXT]
+    (let [CTXT1  (zipmap (repeatedly gensym) OP*1)
+          [N0, D, G, PB]  (take 4 (repeatedly gensym))
+          CTXT2 {PB   {:isa    :Find-Node-of-Generative-Graph-Problem
+                       :graph  G
+                       :pred   #(set/subset? GC* (cget* % :cond*))
+                      }
+                 G    {:isa      :Graph
+                       :gen-def  D
+                      }
+                 D    {:isa            :Graph-Generative-Definition
+                       :start-node     N0
+                       :domain-op*     (set (keys CTXT1))
+                       :apply-op-pre?  #(apply-op-pre? (cget* %1 :cond*) (cget %2))
+                       :apply-op       (fn [N OA]
+                                          {:isa    :Node
+                                           :cond*  (apply-op (cget* N :cond*) (cget OA))
+                                          }
+                                        )
+                      }
+                 N0   {:isa    :Node
+                       :cond*  IC*
+                     }
+                 }]
+    (reset! CTXT (merge CTXT1 CTXT2))
+    (binding [*context* CTXT]
       (if-not (solve-by-heuristic-search PB) false
-        (for [OP (cget-v PB :op-v)] (cget OP)) ))))
+        (mapv cget (cget-v PB :op-v)) )))))
 
 

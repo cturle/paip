@@ -1,9 +1,9 @@
 ;;;; File gps1_ctu_test.clj
 
-(ns paip.gps1-ctu-test
+(ns ctu.gps1-test
   (:require [clojure.test :refer :all]
             [ctu.core :refer :all]
-            [paip.gps1-ctu :refer :all]))
+            [ctu.gps1 :refer :all]))
 
 (def +GPS-PB1+ {:Op1 {:action   :drive-son-to-school
                       :preconds #{:son-at-home :car-works}
@@ -11,8 +11,9 @@
                       :del-list #{:son-at-home}
                       } })
 
+; (op-accessors-tests)
 (deftest op-accessors-tests
-  (binding [*context* +GPS-PB1+]
+  (binding [*context* (atom +GPS-PB1+)]
     (testing "Operation accessors"
       (is (= :drive-son-to-school       (op-name (cget :Op1))))
       (is (= #{:son-at-home :car-works} (pre* (cget :Op1))))
@@ -21,8 +22,9 @@
       )))
 
 
+; (apply-op-tests)
 (deftest apply-op-tests
-  (binding [*context* +GPS-PB1+]
+  (binding [*context* (atom +GPS-PB1+)]
     (testing "apply-op-pre?"
       (let [C*1  #{:son-at-home :car-works :other}
             OP   :Op1]
@@ -76,9 +78,10 @@
     } })
 
 
+; (gps-tests)
 (deftest gps-tests
   (testing "POST"
-    (binding [*context* +GPS-PB1+]
+    (binding [*context* (atom +GPS-PB1+)]
       (let [IS    #{:son-at-home :car-works :other}
             GS    #{:son-at-school}
             OP*1  #{(cget :Op1)}
@@ -89,27 +92,27 @@
             OP*1  #{(cget :Op1)}
             OP*2  [(cget :Op1)] ]
         (is (not (gps-post? IS GS OP*1 OP*2))) )))
-  (testing "CASE : backward solution"
-    (let [IS    #{:son-at-home :car-needs-battery :have-money :have-phone-book}
-          GS    #{:son-at-school}
-          OP*1  +school-ops+
-          OP*2  (gps IS GS OP*1) ]
-      (is OP*2)
-      (is (gps-post? IS GS OP*1 OP*2)) ))
-  (testing "CASE : no solution"
-    (let [IS    #{:son-at-home :car-needs-battery :have-money}
-          GS    #{:son-at-school}
-          OP*1  +school-ops+
-          OP*2  (gps IS GS OP*1) ]
-      (is (false? OP*2)) ))
-  (testing "CASE : one step solution"
-    (let [IS    #{:son-at-home :car-works}
-          GS    #{:son-at-school}
-          OP*1  +school-ops+
-          OP*2  (gps IS GS OP*1) ]
-      (is OP*2)
-      (is (gps-post? IS GS OP*1 OP*2)) ))
-  )
+  (let [gps-to (timeout-fn gps 3000)]
+    (testing "CASE : backward solution"
+      (let [IS     #{:son-at-home :car-needs-battery :have-money :have-phone-book}
+            GS     #{:son-at-school}
+            OP*1   +school-ops+
+            OP*2   (gps-to IS GS OP*1) ]
+        (is OP*2)
+        (is (gps-post? IS GS OP*1 OP*2)) ))
+    (testing "CASE : no solution"
+      (let [IS    #{:son-at-home :car-needs-battery :have-money}
+            GS    #{:son-at-school}
+            OP*1  +school-ops+
+            OP*2  (gps-to IS GS OP*1) ]
+        (is (false? OP*2)) ))
+    (testing "CASE : one step solution"
+      (let [IS    #{:son-at-home :car-works}
+            GS    #{:son-at-school}
+            OP*1  +school-ops+
+            OP*2  (gps-to IS GS OP*1) ]
+        (is OP*2)
+        (is (gps-post? IS GS OP*1 OP*2)) ))))
 
 
 (comment
