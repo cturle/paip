@@ -61,26 +61,23 @@
 
 
 (defn gps-post?
-  [IS GS OP*1 OP*2]
+  [IS GS OP*1 OPNv]
   (or
-   (false? OP*2)
-   (and (every? #(contains? OP*1 %) OP*2)
-        (let [R ((reduce-pre apply-op apply-op-pre?) IS OP*2)]
-          (and (:all-pre-ok? R)
-               (set/superset? (:out R) GS) )))))
+   (false? OPNv)
+   (let [get-op-by-name (fn [N] (first (filter #(= N (op-name %)) OP*1)))
+         OP*2           (mapv get-op-by-name OPNv)
+         R              ((reduce-pre apply-op apply-op-pre?) IS OP*2) ]
+      (and (:all-pre-ok? R)
+           (set/superset? (:out R) GS) ))))
 
-
-; (?PB :isa :Find-Node-of-Generative-Graph-Problem)
-; => (one-of [?N (all-nodes (graph ?PB)) :when ((pred ?PB) ?N)] ?N)
-
-;(declare new-gps-problem solved? elaborate-state choose-next-State-Operator apply-State-Operator)
 
 (defn gps
   "General Problem Solver :
-  [set-of Condition IC*, set-of Condition GC*, set-of Operation OP*1] -> (or False, list-of Operation) OP*2
-  post : (or (false? OP*2)
-             (and (every? [OPi OP*2] (set/contains? OP*1 OPi))
-                  (set/superset? (reduce apply-op IC* OP*2) GC*) ))"
+  [set-of Condition IC*, set-of Condition GC*, set-of Operation OP*1] -> (or False, list-of Operation) OPNv
+  post : (or (false? OPNv)
+             (and (= OPNv (mapv op-name OP2*))
+                  (isa OP2* vector-of Operation :| (every? [OPi OP*2] (set/contains? OP*1 OPi))
+                                                   (set/superset? (reduce apply-op IC* OP*2) GC*) )))"
   ([IC* GC* OP*1]
     (gps IC* GC* OP*1 (atom nil)) )
   ([IC* GC* OP*1 CTXT]
@@ -113,6 +110,6 @@
     (reset! CTXT (merge CTXT1 CTXT2))
     (binding [*context* CTXT]
       (if-not (solve-by-heuristic-search PB) false
-        (mapv cget (cget-v PB :op-v)) )))))
+        (mapv (comp op-name cget) (cget-v PB :op-v)) )))))
 
 

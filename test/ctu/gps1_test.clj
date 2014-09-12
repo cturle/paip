@@ -85,12 +85,12 @@
       (let [IS    #{:son-at-home :car-works :other}
             GS    #{:son-at-school}
             OP*1  #{(cget :Op1)}
-            OP*2  [(cget :Op1)] ]
+            OP*2  [(op-name (cget :Op1))] ]
         (is (gps-post? IS GS OP*1 OP*2)) )
       (let [IS    #{:son-at-home :other}
             GS    #{:son-at-school}
             OP*1  #{(cget :Op1)}
-            OP*2  [(cget :Op1)] ]
+            OP*2  [(op-name (cget :Op1))] ]
         (is (not (gps-post? IS GS OP*1 OP*2))) )))
   (let [gps-to (timeout-fn gps 3000)]
     (testing "CASE : backward solution"
