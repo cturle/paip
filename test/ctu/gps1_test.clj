@@ -1,4 +1,4 @@
-;;;; File gps1_ctu_test.clj
+;;;; File ctu/gps1_test.clj
 
 (ns ctu.gps1-test
   (:require [clojure.test :refer :all]
