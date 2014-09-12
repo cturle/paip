@@ -128,18 +128,27 @@
     (testing "CASE : 0 step from solution"
       (binding [*context* (atom (assoc-in +CTXT+ [:PB :pred] #(= 1 (cget % :value))))]
         (is (SOLVE :PB))
+        (is (= :solved (cget :PB :state)))
         (is (= [] (cget-v :PB :op-v)))
         ))
     (testing "CASE : 1 step from solution"
       (binding [*context* (atom +CTXT+)]
         (is (SOLVE :PB))
+        (is (= :solved (cget :PB :state)))
         (is (= [:A1] (cget-v :PB :op-v)))
         ))
     (testing "CASE : 4 step from solution"
       (binding [*context* (atom (assoc-in +CTXT+ [:PB :pred] #(= 5 (cget % :value))))]
         (is (SOLVE :PB))
+        (is (= :solved (cget :PB :state)))
         (is (= [:A1 :A1 :A1 :A1] (cget-v :PB :op-v)))
-       ))))
+       ))
+    (testing "CASE : no solution"
+      (binding [*context* (atom (assoc-in +CTXT+ [:D :apply-op-pre?] (constantly false)))]
+        (is (not (SOLVE :PB)))
+        (is (= :end-because-choose-failed (cget :PB :state)))
+        ))
+    ))
 
 
 (comment

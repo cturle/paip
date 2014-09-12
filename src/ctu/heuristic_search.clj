@@ -27,21 +27,23 @@
                      (recur :choose Args) ))
       :choose  (do (let [R (choose-next-node-and-operator PB)]
                      (if-not (:success R)
-                       false
+                       (let [nPBpps (assoc (cget PB) :state :end-because-choose-failed)]
+                         (swap! *context* assoc PB nPBpps)
+                         false )
                        (recur :apply (merge Args (select-keys R [:operator :node]))) )))
-      :apply   (do (let [R (apply-operator-on-node PB (:operator Args) (:node Args))]
-                     (if-not (:success R)
-                       false
-                       (recur :check Args) )))
+      :apply   (do (apply-operator-on-node PB (:operator Args) (:node Args))
+                   (recur :check Args) )
       :path    (do (let [OA-v    (cget-v PB :op-apply-v)
                          N0      (cget PB :start-node)
                          Nn      (:solution Args)
                          RP      (choice-v Nn
                                            (fn [S]   (first (filter #(= (cget % :out) S) OA-v)))
                                            (fn [S C] (cget C :node))
-                                           (fn [S]   (= S N0)) )]
-                     (swap! *context* assoc-in [PB :op-v] (mapv #(cget % :op) (rseq RP)))
-                     true )))))
+                                           (fn [S]   (= S N0)) )
+                         nPBpps  (assoc (cget PB) :op-v  (mapv #(cget % :op) (rseq RP))
+                                                  :state :solved )]
+                     (swap! *context* assoc PB nPBpps) )
+                     true ))))
 
 
 (defn init-context
@@ -50,7 +52,7 @@
   (let [G   (cget PB :graph)
         N0  (cget (cget G :gen-def) :start-node)
         NG  (merge (cget G)  {:node* #{N0}})
-        NPB (merge (cget PB) {:op-apply-v [], :start-node N0}) ]
+        NPB (merge (cget PB) {:op-apply-v [], :start-node N0, :state :searching}) ]
     (swap! *context* merge {PB NPB, G NG}) ))
 
 (defn get-solution
@@ -122,7 +124,7 @@
   "[Graph G, NodeProperties NPPs] -> Node N
   N is a new Node added to the Graph G."
   [G NPPs]
-  (let [N   (gensym "Node"),
+  (let [N   (gensym "Node-"),
         NN  (assoc NPPs :isa :Node)
         NG  (update-in (cget G) [:node*] conj N) ]
     (swap! *context* assoc G NG, N NN)
@@ -132,7 +134,7 @@
   "[Problem PB, OpApplyProperties OAPPs] -> Op-Apply OA
   OA is a new Op-Apply "
   [PB OAPPs]
-  (let [OA  (gensym "Op-Apply")
+  (let [OA  (gensym "OpApply-")
         NOA (merge OAPPs {:isa :Op-Apply})
         NPB (update-in (cget PB) [:op-apply-v] conj OA) ]
     (swap! *context* assoc PB NPB, OA NOA)
