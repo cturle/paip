@@ -84,8 +84,11 @@
   ([IC* GC* OP*1]
     (gps IC* GC* OP*1 (atom nil)) )
   ([IC* GC* OP*1 CTXT]
-    (let [CTXT1  (zipmap (repeatedly gensym) OP*1)
-          [N0, D, G, PB]  (take 4 (repeatedly gensym))
+    (let [CTXT1  (zipmap (repeatedly #(gensym "Operation")) OP*1)
+          N0  (gensym "Node-")
+          D   (gensym "Definition-")
+          G   (gensym "Graph-")
+          PB  (gensym "Problem-")
           CTXT2 {PB   {:isa    :Find-Node-of-Generative-Graph-Problem
                        :graph  G
                        :pred   #(set/subset? GC* (cget* % :cond*))
