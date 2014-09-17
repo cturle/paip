@@ -49,35 +49,6 @@
       )))
 
 
-(def +school-ops+
-  #{{:action   :drive-son-to-school
-     :preconds #{:son-at-home :car-works}
-     :add-list #{:son-at-school}
-     :del-list #{:son-at-home}
-     }
-    {:action   :shop-installs-battery
-     :preconds #{:car-needs-battery :shop-knows-problem :shop-has-money}
-     :add-list #{:car-works}
-     }
-   {:action   :tell-shop-problem
-    :preconds #{:in-communication-with-shop}
-    :add-list #{:shop-knows-problem}
-    }
-   {:action   :telephone-shop
-    :preconds #{:know-phone-number}
-    :add-list #{:in-communication-with-shop}
-    }
-   {:action   :look-up-number
-    :preconds #{:have-phone-book}
-    :add-list #{:know-phone-number}
-    }
-   {:action   :give-shop-money
-    :preconds #{:have-money}
-    :add-list #{:shop-has-money}
-    :del-list #{:have-money}
-    } })
-
-
 ; (gps-tests)
 (deftest gps-tests
   (testing "POST"
@@ -98,8 +69,8 @@
             GS     #{:son-at-school}
             OP*1   +school-ops+
             OP*2   (gps-to IS GS OP*1) ]
-        (is OP*2)
-        (is (gps-post? IS GS OP*1 OP*2)) ))
+        (when (is OP*2)
+          (is (gps-post? IS GS OP*1 OP*2))) ))
     (testing "CASE : no solution"
       (let [IS    #{:son-at-home :car-needs-battery :have-money}
             GS    #{:son-at-school}
@@ -111,8 +82,8 @@
             GS    #{:son-at-school}
             OP*1  +school-ops+
             OP*2  (gps-to IS GS OP*1) ]
-        (is OP*2)
-        (is (gps-post? IS GS OP*1 OP*2)) ))))
+        (when (is OP*2)
+          (is (gps-post? IS GS OP*1 OP*2)) )))))
 
 
 (comment

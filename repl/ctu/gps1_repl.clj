@@ -6,7 +6,7 @@
             [ctu.gps1 :refer :all]
             [ctu.gps1-test :refer :all]))
 
-
+; we define a global context here.
 (def C (atom nil))
 
 (let [gps-to (timeout-fn gps 3000)
@@ -42,6 +42,7 @@
   (gps-to IS GS OP*1 C) )
 
 (inspect-tree (deref C))
+
 
 
 

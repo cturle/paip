@@ -16,6 +16,33 @@
 ; apply-op = [set-of Condition, Operation] -> set-of Condition
 ; gps = [set-of Condition init-state, set-of Condition goal-state, set-of Operation] -> list-of Operation
 
+(def +school-ops+
+  #{{:action   :drive-son-to-school
+     :preconds #{:son-at-home :car-works}
+     :add-list #{:son-at-school}
+     :del-list #{:son-at-home}
+     }
+    {:action   :shop-installs-battery
+     :preconds #{:car-needs-battery :shop-knows-problem :shop-has-money}
+     :add-list #{:car-works}
+     }
+   {:action   :tell-shop-problem
+    :preconds #{:in-communication-with-shop}
+    :add-list #{:shop-knows-problem}
+    }
+   {:action   :telephone-shop
+    :preconds #{:know-phone-number}
+    :add-list #{:in-communication-with-shop}
+    }
+   {:action   :look-up-number
+    :preconds #{:have-phone-book}
+    :add-list #{:know-phone-number}
+    }
+   {:action   :give-shop-money
+    :preconds #{:have-money}
+    :add-list #{:shop-has-money}
+    :del-list #{:have-money}
+    } })
 
 ;;; Operation accessors
 
@@ -77,6 +104,77 @@
   post : (or (false? OPNv)
              (and (= OPNv (mapv op-name OP2*))
                   (isa OP2* vector-of Operation :| (every? [OPi OP*2] (set/contains? OP*1 OPi))
+                                                   (set/superset? (reduce apply-op IC* OP*2) GC*) )))
+
+  * utilisation d'une recherche dans un graphe générique depuis le but vers l'état initial.
+
+  * avec 'u'=union, '/'=set-diff, '^'=intersection, '0'=empty-set, '<='=included-in
+  set-rule SR1 : X=A/B => X<=A and X^B=0
+  set-rule SR2 : C<=A and A^B=0 => C^B=0
+  set-rule SR3 : A<=BuC => A/B<=C and A/C<=B
+
+  * avec C*1=cond*(N1), C*2 idem mais pour N2, A=add*(op), D=del*(op), P=pre*(op)
+  I*1 = borne-inf de C*1, I*2 borne-inf de C*2
+   => (R1) : I*1<=C*1, (R2) : I*2<=C*2
+  (op-apply N1 op N2)
+   => (R3) : P<=C*1 and (R4) : C*2=(C*1uA)/D
+  R4,SR1
+   => (R5) : C*2<=(C*1uA) and (R6) : C*2^D=0
+  R5,R2
+   => (R7) : I*2<=(C*1uA)
+  R7,SR3
+   => (R8) : I*2/C*1<=A and (R9) : I*2/A<=C*1
+  R2,R6,SR2
+   => (R10) : I*2^D=0
+
+  * Ce qui nous donne :
+  apply-op-pre (R10) : vérifier I*2^D=0
+  heuristique à inclure dans apply-op-pre : not(I*2^A=0)
+  apply-op (R3,R9)   : I*1 = Pu(I*2/A) ; car I*1 = borne inf de C*1"
+  ([IC* GC* OP*1]
+    (gps IC* GC* OP*1 (atom nil)) )
+  ([IC* GC* OP*1 CTXT]
+    (let [CTXT1  (zipmap (repeatedly #(gensym "Operation")) OP*1)
+          NG  (gensym "Node-")
+          D   (gensym "Definition-")
+          G   (gensym "Graph-")
+          PB  (gensym "Problem-")
+          CTXT2 {PB   {:isa    :Find-Node-of-Generative-Graph-Problem
+                       :graph  G
+                       :pred   #(set/subset? (cget* % :cond*-inf) IC*)
+                      }
+                 G    {:isa      :Graph
+                       :gen-def  D
+                      }
+                 D    {:isa            :Graph-Generative-Definition
+                       :start-node     NG
+                       :domain-op*     (set (keys CTXT1))
+                       :apply-op-pre?  (fn [N2 OA]
+                                         (and      (empty? (set/intersection (cget* N2 :cond*-inf) (del* (cget OA))))
+                                              (not (empty? (set/intersection (cget* N2 :cond*-inf) (add* (cget OA))))) ))
+                       :apply-op       (fn [N2 OA]
+                                          {:isa        :Node
+                                           :cond*-inf  (set/union (pre* (cget OA))
+                                                                  (set/difference (cget* N2 :cond*-inf) (add* (cget OA))) )
+                                          }
+                                        )
+                      }
+                 NG   {:isa        :Node
+                       :cond*-inf  GC*
+                     }
+                 }]
+    (reset! CTXT (merge CTXT1 CTXT2))
+    (binding [*context* CTXT]
+      (if-not (solve-by-heuristic-search PB) false
+        (mapv (comp op-name cget) (rseq (cget-v PB :op-v))) )))))
+
+
+(defn gps-forward
+  "General Problem Solver :
+  [set-of Condition IC*, set-of Condition GC*, set-of Operation OP*1] -> (or False, list-of Operation) OPNv
+  post : (or (false? OPNv)
+             (and (= OPNv (mapv op-name OP2*))
+                  (isa OP2* vector-of Operation :| (every? [OPi OP*2] (set/contains? OP*1 OPi))
                                                    (set/superset? (reduce apply-op IC* OP*2) GC*) )))"
   ([IC* GC* OP*1]
     (gps IC* GC* OP*1 (atom nil)) )
@@ -111,5 +209,4 @@
     (binding [*context* CTXT]
       (if-not (solve-by-heuristic-search PB) false
         (mapv (comp op-name cget) (cget-v PB :op-v)) )))))
-
 
