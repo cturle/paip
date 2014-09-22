@@ -1,26 +1,16 @@
-;;;; File ctu/gps1_test.clj
+;;;; File test/ctu/gps1_test.clj
 
 (ns ctu.gps1-test
   (:require [clojure.test :refer :all]
             [ctu.core :refer :all]
-            [ctu.gps1 :refer :all]))
+            [ctu.gps1 :refer :all]
+            [paip.gps1 :refer [+school-ops+ op-name pre* add* del*]] ))
 
 (def +GPS-PB1+ {:Op1 {:action   :drive-son-to-school
                       :preconds #{:son-at-home :car-works}
                       :add-list #{:son-at-school}
                       :del-list #{:son-at-home}
                       } })
-
-; (op-accessors-tests)
-(deftest op-accessors-tests
-  (binding [*context* (atom +GPS-PB1+)]
-    (testing "Operation accessors"
-      (is (= :drive-son-to-school       (op-name (cget :Op1))))
-      (is (= #{:son-at-home :car-works} (pre* (cget :Op1))))
-      (is (= #{:son-at-school}          (add* (cget :Op1))))
-      (is (= #{:son-at-home}            (del* (cget :Op1))))
-      )))
-
 
 ; (apply-op-tests)
 (deftest apply-op-tests

@@ -1,70 +1,16 @@
-;;;; File ctu/gps1.clj: First version of GPS (General Problem Solver)
+;;;; File src/ctu/gps1.clj: First version of GPS (General Problem Solver)
 ; Christophe Turle implementation from the same specification
 
 (ns ctu.gps1
   (:require [clojure.set :as set]
             [ctu.core :refer :all]
-            [ctu.heuristic-search :refer [solve-by-heuristic-search]] ))
+            [ctu.heuristic-search :refer [solve-by-heuristic-search]]
+            [paip.gps1 :refer [+school-ops+ op-name pre* add* del*]] ))
 
 ;;; === § 4.1 => §4.4 : GPS1 from CTU
 ;;; GPS isa conceptual representation of problems and a 'means-ends' implementation to solve these problems
 
 
-;;; Conceptual Representation of Problems
-; Condition = Keyword
-; Operation = [the Keyword op-name, set-of Condition pre*, set-of Condition add*, set-of Condition del*]
-; apply-op = [set-of Condition, Operation] -> set-of Condition
-; gps = [set-of Condition init-state, set-of Condition goal-state, set-of Operation] -> list-of Operation
-
-(def +school-ops+
-  #{{:action   :drive-son-to-school
-     :preconds #{:son-at-home :car-works}
-     :add-list #{:son-at-school}
-     :del-list #{:son-at-home}
-     }
-    {:action   :shop-installs-battery
-     :preconds #{:car-needs-battery :shop-knows-problem :shop-has-money}
-     :add-list #{:car-works}
-     }
-   {:action   :tell-shop-problem
-    :preconds #{:in-communication-with-shop}
-    :add-list #{:shop-knows-problem}
-    }
-   {:action   :telephone-shop
-    :preconds #{:know-phone-number}
-    :add-list #{:in-communication-with-shop}
-    }
-   {:action   :look-up-number
-    :preconds #{:have-phone-book}
-    :add-list #{:know-phone-number}
-    }
-   {:action   :give-shop-money
-    :preconds #{:have-money}
-    :add-list #{:shop-has-money}
-    :del-list #{:have-money}
-    } })
-
-;;; Operation accessors
-
-(defn op-name
-  "get the name of an Operation OP"
-  [OP]
-  (get OP :action) )
-
-(defn pre*
-  "get preconditions of Operation OP"
-  [OP]
-  (get OP :preconds #{}))
-
-(defn add*
-  "get conditions to add after applying Operation OP"
-  [OP]
-  (get OP :add-list #{}))
-
-(defn del*
-  "get conditions to remove after applying Operation OP"
-  [OP]
-  (get OP :del-list #{}))
 
 ;;; apply-op : apply an Operation on a set of Condition
 
