@@ -42,7 +42,7 @@
   [F F-PRE?]
   (fn [INIT L]
     (loop [X INIT, L L]
-      (when (.. Thread currentThread isInterrupted)
+      (when (Thread/interrupted)
         (throw (ex-info "interruption in reduce-pre" {:type :interruption, :X X :L L})) )
       (if (empty? L) {:all-pre-ok? true, :out X}
         (let [Y (first L)]
@@ -58,7 +58,7 @@
   Interruptible."
   [S0, S-C, SC-S, FS?]
   (loop [S S0, C-v []]
-    (when (.. Thread currentThread isInterrupted)
+    (when (Thread/interrupted)
       (throw (ex-info "interruption in choice-v" {:type :interruption, :S S :C-v C-v})) )
     (if (FS? S)
       C-v

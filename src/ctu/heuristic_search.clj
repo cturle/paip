@@ -17,7 +17,7 @@
        apply-operator-on-node )"
   [PB]
   (loop [State :init, Args {}]
-    (when (.. Thread currentThread isInterrupted)
+    (when (Thread/interrupted)
       (throw (ex-info "interruption in solve-by-heuristic-search" {:type :interruption, :state State, :Args Args})) )
     (case State
       :init    (do (init-context PB)
