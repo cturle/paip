@@ -1,6 +1,6 @@
 ;;;; File test/paip/gps1_test.clj
 
-(ns paip.gps1-ctu-repl
+(ns paip.gps1-test
   (:require [clojure.test :refer :all]
             [paip.core :refer :all]
             [paip.gps1 :refer :all] ))
