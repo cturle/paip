@@ -18,6 +18,7 @@ Chapters :
   4.1. => 4.9. : GPS1 : **implemented**
   4.10. : The Lack of Intermediate Information Problem : **implemented**
   4.11. : GPS Version 2: A More General Problem Solver : **implemented**
+  4.12. : The New Domain Problem: Monkey and Bananas : **implemented**
 
 
 Last updated : 2014-09-25

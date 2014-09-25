@@ -4,6 +4,7 @@
   (:require [ctu.core :refer :all]
             [paip.core :refer :all]
             [paip.gps2 :refer :all]
+            [paip.dom-bananas]
             [clojure.tools.trace :refer :all]
             [clojure.repl :refer :all] ))
 
@@ -43,7 +44,14 @@
       +paip-school-ops+ )
 
 
+;;; 4.12 The New Domain Problem: Monkey and Bananas
 
+(def +paip-bananas-ops+ (set (map convert-op paip.dom-bananas/+available-ops+)))
+
+((timeout-fn gps 500)
+      [:at-door :on-floor :has-ball :hungry :chair-at-door]
+      [:not-hungry]
+      +paip-bananas-ops+ )
 
 
 

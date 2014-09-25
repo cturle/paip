@@ -4,7 +4,8 @@
   (:require [clojure.test :refer :all]
             [ctu.core :refer :all]
             [paip.core :refer :all]
-            [paip.gps2 :refer :all] ))
+            [paip.gps2 :refer :all]
+            [paip.dom-bananas] ))
 
 (undebug)
 
@@ -56,7 +57,14 @@
       (is (= '([:start])
              (GPS [:son-at-home]
                   [:son-at-home]
-                  +paip-school-ops+ )))) )))
+                  +paip-school-ops+ ))))
+    (testing "CASE : monkey and bananas"
+      (is (= '([:start] [:executing :push-chair-from-door-to-middle-room] [:executing :climb-on-chair]
+               [:executing :drop-ball] [:executing :grasp-bananas] [:executing :eat-bananas])
+             (GPS [:at-door :on-floor :has-ball :hungry :chair-at-door]
+                  [:not-hungry]
+                  (map convert-op paip.dom-bananas/+available-ops+) ))))
+      )))
 
 
 ; (run-tests)
