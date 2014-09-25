@@ -5,7 +5,7 @@
   (:require [clojure.set :as set]
             [ctu.core :refer :all]
             [ctu.heuristic-search :refer [solve-by-heuristic-search]]
-            [paip.gps1 :refer [+school-ops+ op-name pre* add* del*]] ))
+            [paip.gps1 :refer [op-name pre* add* del*]] ))
 
 ;;; === § 4.1 => §4.4 : GPS1 from CTU
 ;;; GPS isa conceptual representation of problems and a 'means-ends' implementation to solve these problems
