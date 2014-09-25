@@ -22,9 +22,9 @@
       (is (= NOP (convert-op NOP))) )))
 
 ; (op-tests)
-(deftest mk-op-tests
+(deftest op-tests
   (testing "cas nominal"
-    (let [OP (mk-op {:action :op-name, :add-list #{:cond1}})]
+    (let [OP (op :op-name {:add-list #{:cond1}})]
       (is (= {:action :op-name, :add-list #{:cond1, [:executing :op-name]}} OP)) )))
 
 ; (gps-tests)
@@ -35,28 +35,28 @@
                [:executing :give-shop-money] [:executing :shop-installs-battery] [:executing :drive-son-to-school])
              (GPS [:son-at-home :car-needs-battery :have-money :have-phone-book]
                   [:son-at-school]
-                  +school-ops+ )))
+                  +paip-school-ops+ )))
     (testing "CASE : one direct operator"
       (is (= '([:start] [:executing :drive-son-to-school])
              (GPS [:son-at-home :car-works]
                   [:son-at-school]
-                  +school-ops+ ))))
+                  +paip-school-ops+ ))))
     (testing "CASE : avoids leaping before it looks."
       (is (nil? (GPS [:son-at-home :car-needs-battery :have-money :have-phone-book]
                      [:have-money :son-at-school]
-                     +school-ops+ )))
+                     +paip-school-ops+ )))
       (is (nil? (GPS [:son-at-home :car-needs-battery :have-money :have-phone-book]
                      [:son-at-school :have-money]
-                     +school-ops+ ))))
+                     +paip-school-ops+ ))))
     (testing "CASE : missing pre-condition or missing operator"
       (is (nil? (GPS [:son-at-home :car-needs-battery :have-money]
                      [:son-at-school]
-                     +school-ops+ ))))
+                     +paip-school-ops+ ))))
     (testing "CASE : goal already in state"
       (is (= '([:start])
              (GPS [:son-at-home]
                   [:son-at-home]
-                  +school-ops+ )))) )))
+                  +paip-school-ops+ )))) )))
 
 
 ; (run-tests)

@@ -15,32 +15,32 @@
 ((timeout-fn gps 500)
       [:son-at-home :car-needs-battery :have-money :have-phone-book]
       [:son-at-school]
-      +school-ops+ )
+      +paip-school-ops+ )
 
 ((timeout-fn gps 500)
       [:son-at-home :car-works]
       [:son-at-school]
-      +school-ops+ )
+      +paip-school-ops+ )
 
 ((timeout-fn gps 500)
       [:son-at-home :car-needs-battery :have-money :have-phone-book]
       [:have-money :son-at-school]
-      +school-ops+ )
+      +paip-school-ops+ )
 
 ((timeout-fn gps 500)
       [:son-at-home :car-needs-battery :have-money :have-phone-book]
       [:son-at-school :have-money]
-      +school-ops+ )
+      +paip-school-ops+ )
 
 ((timeout-fn gps 500)
       [:son-at-home :car-needs-battery :have-money]
       [:son-at-school]
-      +school-ops+ )
+      +paip-school-ops+ )
 
 ((timeout-fn gps 500)
       [:son-at-home]
       [:son-at-home]
-      +school-ops+ )
+      +paip-school-ops+ )
 
 
 

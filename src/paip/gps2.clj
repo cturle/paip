@@ -19,16 +19,16 @@
     OP
     (update-in OP [:add-list] conj [:executing (op-name OP)]) ))
 
-; Norvig names it 'op'
-(defn mk-op
+(defn op
 "Make a new operator that obeys the (:executing op-name) convention."
-  [OP-PP*]
-  (convert-op OP-PP*) )
+  [OP-NAME OP-PP*]
+  (convert-op (assoc OP-PP* :action OP-NAME)) )
 
 
 ;;; ==============================
 
-(def +school-ops+ (set (map convert-op v1/+school-ops+)))
+; other program may need the original more declarative definition.
+(def +paip-school-ops+ (set (map convert-op v1/+school-ops+)))
 
 ;;; ==============================
 
