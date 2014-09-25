@@ -4,7 +4,8 @@
             [clojure.inspector :refer :all]
             [ctu.core :refer :all]
             [ctu.gps1 :refer :all]
-            [ctu.gps1-test :refer :all]))
+            [ctu.gps1-test :refer :all]
+            [paip.dom-bananas] ))
 
 ; we define a global context here.
 (def C (atom nil))
@@ -43,6 +44,16 @@
 
 (inspect-tree (deref C))
 
+
+; 4.12 The New Domain Problem: Monkey and Bananas
+
+(let [gps-to (timeout-fn gps 3000)
+      IS     #{:at-door :on-floor :has-ball :hungry :chair-at-door}
+      GS     #{:not-hungry}
+      OP*1   paip.dom-bananas/+available-ops+ ]
+  (gps-to IS GS OP*1 C) )
+
+(inspect-tree (deref C))
 
 
 
