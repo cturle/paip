@@ -3,6 +3,12 @@
            [clojure.pprint :as pp]) )
 
 
+(defn starts-with
+"Is L a list whose first element is X ?"
+  [L X]
+  (and (coll? L) (= (first L) X)) )
+
+;============================================================================
 
 (def +dbg-id*+
 "Identifiers used by dbg"
