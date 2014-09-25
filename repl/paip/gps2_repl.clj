@@ -15,12 +15,12 @@
 
 ((timeout-fn gps 500)
       [:son-at-home :car-needs-battery :have-money :have-phone-book]
-      [:son-at-school]
+      #{:son-at-school}
       +paip-school-ops+ )
 
 ((timeout-fn gps 500)
       [:son-at-home :car-works]
-      [:son-at-school]
+      #{:son-at-school}
       +paip-school-ops+ )
 
 ((timeout-fn gps 500)
@@ -35,12 +35,12 @@
 
 ((timeout-fn gps 500)
       [:son-at-home :car-needs-battery :have-money]
-      [:son-at-school]
+      #{:son-at-school}
       +paip-school-ops+ )
 
 ((timeout-fn gps 500)
       [:son-at-home]
-      [:son-at-home]
+      #{:son-at-home}
       +paip-school-ops+ )
 
 
@@ -50,7 +50,7 @@
 
 ((timeout-fn gps 500)
       [:at-door :on-floor :has-ball :hungry :chair-at-door]
-      [:not-hungry]
+      #{:not-hungry}
       +paip-bananas-ops+ )
 
 

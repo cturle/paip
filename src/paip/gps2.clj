@@ -38,6 +38,7 @@
 
 (defn gps
 "General Problem Solver: from state S (init conditions), achieve goals G* (final conditions) using operators OP*."
+  ; note that state is now required to be a sequence (and not a set) due to implementation choice.
   [S G* OP*]
   (binding [*available-ops* OP*]
     (when-let [AA (achieve-all (cons [:start] S) G* '())]
