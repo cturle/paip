@@ -1,6 +1,5 @@
 (ns paip.dom-maze
-  (require [clojure.pprint :as pp]
-           [ctu.core :refer :all]) )
+  (require [ctu.core :refer :all]) )
 
 (declare make-maze-ops make-maze-op)
 
