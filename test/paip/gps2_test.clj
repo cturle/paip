@@ -5,8 +5,7 @@
             [ctu.core :refer :all]
             [paip.core :refer :all]
             [paip.gps2 :refer :all]
-            [paip.dom-bananas]
-            [paip.dom-maze] ))
+            [paip.dom-bananas], [paip.dom-maze], [paip.dom-blocks] ))
 
 (undebug)
 
@@ -70,7 +69,7 @@
 (deftest gps-chap4-13-tests
   (let [GPS (timeout-fn gps-chap4-13 500)]
     (testing "CASE : maze"
-      (is (= '([:executing [:move :from 1 :to 2]] [:executing [:move :from 2 :to 3]] [:executing [:move :from 3 :to 4]]
+      (is (= '([:start] [:executing [:move :from 1 :to 2]] [:executing [:move :from 2 :to 3]] [:executing [:move :from 3 :to 4]]
                [:executing [:move :from 4 :to 9]] [:executing [:move :from 9 :to 8]] [:executing [:move :from 8 :to 7]]
                [:executing [:move :from 7 :to 12]] [:executing [:move :from 12 :to 11]] [:executing [:move :from 11 :to 16]]
                [:executing [:move :from 16 :to 17]] [:executing [:move :from 17 :to 22]] [:executing [:move :from 22 :to 23]]

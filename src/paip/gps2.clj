@@ -98,6 +98,8 @@
 (defn use-ops [OP*]
   (reset! +current-used-ops+ OP*) )
 
+(declare action?)
+
 (defn gps-chap4-13
 "General Problem Solver: from state S (init conditions), achieve goals G* (final conditions) using operators OP*."
   ; note that state is now required to be a sequence (and not a set) due to implementation choice.
@@ -106,7 +108,12 @@
   ([S G* OP*]
    (binding [*available-ops* OP*]
      (when-let [AA (achieve-all (cons [:start] S) G* '())]
-       (filter executing? AA) ))))
+       (filter action? AA) ))))
+
+(defn action?
+"Is X something that is [:start] or [:executing ...] ?"
+  [X]
+  (or (= X [:start]) (executing? X)) )
 
 (declare destination)
 
@@ -114,7 +121,7 @@
 "Search a maze for a path from start to end."
   [START END]
   (if-let [results (gps-chap4-13 [[:at START]] #{[:at END]})]
-    (cons START (map destination results)) ))
+    (cons START (map destination (remove #(= [:start] %) results))) ))
 
 
 (defn destination
