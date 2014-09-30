@@ -81,7 +81,10 @@
         R )
       )))
 
-
+(defn all-distinct?
+"returns true iff all elements of collection ELTs are not= from each other."
+  [ELTs]
+  (= (count (set ELTs)) (count ELTs)) )
 
 
 

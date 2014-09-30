@@ -76,6 +76,19 @@
       (is (= [inc inc] (F 1 (fn [S] inc) (fn [S C] (C S)) (fn [S] (= 3 S))))) )))
 
 
+; (all-distinct?-tests)
+(deftest all-distinct?-tests
+  (testing "CASE : nominal true"
+    (is (all-distinct? []))
+    (is (all-distinct? [:a]))
+    (is (all-distinct? [:a :b]))
+    (is (all-distinct? [:a :b :c])) )
+  (testing "CASE : nominal false"
+    (is (not (all-distinct? [:a :a])))
+    (is (not (all-distinct? [:a :a :b])))
+    (is (not (all-distinct? [[:a] [:a]]))) ))
+
+
 (comment
   (run-tests)
   )
