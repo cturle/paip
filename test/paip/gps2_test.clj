@@ -5,7 +5,8 @@
             [ctu.core :refer :all]
             [paip.core :refer :all]
             [paip.gps2 :refer :all]
-            [paip.dom-bananas] ))
+            [paip.dom-bananas]
+            [paip.dom-maze] ))
 
 (undebug)
 
@@ -36,7 +37,7 @@
                [:executing :give-shop-money] [:executing :shop-installs-battery] [:executing :drive-son-to-school])
              (GPS [:son-at-home :car-needs-battery :have-money :have-phone-book]
                   [:son-at-school]
-                  +paip-school-ops+ )))
+                  +paip-school-ops+ ))))
     (testing "CASE : one direct operator"
       (is (= '([:start] [:executing :drive-son-to-school])
              (GPS [:son-at-home :car-works]
@@ -63,8 +64,39 @@
                [:executing :drop-ball] [:executing :grasp-bananas] [:executing :eat-bananas])
              (GPS [:at-door :on-floor :has-ball :hungry :chair-at-door]
                   [:not-hungry]
-                  (map convert-op paip.dom-bananas/+available-ops+) ))))
-      )))
+                  (set (map convert-op paip.dom-bananas/+available-ops+)) )))) ))
+
+; (gps-chap4-13-tests)
+(deftest gps-chap4-13-tests
+  (let [GPS (timeout-fn gps-chap4-13 500)]
+    (testing "CASE : maze"
+      (is (= '([:executing [:move :from 1 :to 2]] [:executing [:move :from 2 :to 3]] [:executing [:move :from 3 :to 4]]
+               [:executing [:move :from 4 :to 9]] [:executing [:move :from 9 :to 8]] [:executing [:move :from 8 :to 7]]
+               [:executing [:move :from 7 :to 12]] [:executing [:move :from 12 :to 11]] [:executing [:move :from 11 :to 16]]
+               [:executing [:move :from 16 :to 17]] [:executing [:move :from 17 :to 22]] [:executing [:move :from 22 :to 23]]
+               [:executing [:move :from 23 :to 24]] [:executing [:move :from 24 :to 19]] [:executing [:move :from 19 :to 20]]
+               [:executing [:move :from 20 :to 25]] )
+             (GPS [[:at 1]]
+                  #{[:at 25]}
+                  (set (map convert-op paip.dom-maze/+available-ops+)) ))))
+      ))
+
+; (destination-tests)
+(deftest destination-tests
+  (testing "CASE : nominal"
+    (is (= 2 (destination [:executing [:move :from 1 :to 2]]))) ))
+
+; (find-path-tests)
+(deftest find-path-tests
+  (use-ops (set (map convert-op paip.dom-maze/+available-ops+)))
+  (testing "CASE : nominal"
+    (is (= [1 2 3 4 9 8 7 12 11 16 17 22 23 24 19 20 25]
+           ((timeout-fn find-path 500) 1 25) ))
+    (is (= [1]
+           ((timeout-fn find-path 500) 1 1) ))
+    (is (= ((timeout-fn find-path 500) 1 25)
+           (reverse ((timeout-fn find-path 500) 25 1)) ))))
+
 
 
 ; (run-tests)

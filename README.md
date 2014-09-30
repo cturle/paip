@@ -19,9 +19,10 @@ Chapters :
   4.10. : The Lack of Intermediate Information Problem : **implemented**
   4.11. : GPS Version 2: A More General Problem Solver : **implemented**
   4.12. : The New Domain Problem: Monkey and Bananas : **implemented**
+  4.13. : The Maze Searching Domain : **implemented**
 
 
-Last updated : 2014-09-25
+Last updated : 2014-09-30
 
 ## Usage
 

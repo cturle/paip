@@ -5,7 +5,8 @@
             [ctu.core :refer :all]
             [ctu.gps1 :refer :all]
             [ctu.gps1-test :refer :all]
-            [paip.dom-bananas] ))
+            [paip.gps1 :refer [op-name pre* add* del*]]
+            [paip.dom-bananas], [paip.dom-maze] ))
 
 ; we define a global context here.
 (def C (atom nil))
@@ -54,6 +55,48 @@
   (gps-to IS GS OP*1 C) )
 
 (inspect-tree (deref C))
+
+
+; 4.13 The Maze Searching Domain
+
+(let [gps-to (timeout-fn gps 1000)
+      IS     #{[:at 1]}
+      GS     #{[:at 25]}
+      OP*1   paip.dom-maze/+available-ops+ ]
+  (gps-to IS GS OP*1 C) )
+
+(inspect-tree (deref C))
+
+(declare destination)
+
+(defn find-path
+"Search a maze for a path from start to end."
+  [START END]
+  (let [IS      #{[:at START]}
+        GS      #{[:at END]}
+        OP*1    paip.dom-maze/+available-ops+ ]
+    (if-let [results (gps IS GS OP*1 C)]
+      (cons START (map destination results)) )))
+
+(defn destination
+"Find the Y in [:executing [:move :from X :to Y]]"
+  [ACTION]
+  (nth ACTION 4) )
+
+((timeout-fn find-path 1000) 1 25)
+((timeout-fn find-path 1000) 1 1)
+(= ((timeout-fn find-path 1000) 1 25) (reverse ((timeout-fn find-path 1000) 25 1)))
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -93,11 +93,34 @@
 
 ;;; ==============================
 
-; no use of 'use'
+(def +current-used-ops+ (atom #{}))
+
+(defn use-ops [OP*]
+  (reset! +current-used-ops+ OP*) )
+
+(defn gps-chap4-13
+"General Problem Solver: from state S (init conditions), achieve goals G* (final conditions) using operators OP*."
+  ; note that state is now required to be a sequence (and not a set) due to implementation choice.
+  ([S G*]
+   (gps-chap4-13 S G* @+current-used-ops+) )
+  ([S G* OP*]
+   (binding [*available-ops* OP*]
+     (when-let [AA (achieve-all (cons [:start] S) G* '())]
+       (filter executing? AA) ))))
+
+(declare destination)
+
+(defn find-path
+"Search a maze for a path from start to end."
+  [START END]
+  (if-let [results (gps-chap4-13 [[:at START]] #{[:at END]})]
+    (cons START (map destination results)) ))
 
 
-
-
+(defn destination
+"Find the Y in [:executing [:move :from X :to Y]]"
+  [ACTION]
+  (nth (second ACTION) 4) )
 
 
 

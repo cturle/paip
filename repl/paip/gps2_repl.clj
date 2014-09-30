@@ -5,6 +5,7 @@
             [paip.core :refer :all]
             [paip.gps2 :refer :all]
             [paip.dom-bananas]
+            [paip.dom-maze]
             [clojure.tools.trace :refer :all]
             [clojure.repl :refer :all] ))
 
@@ -53,6 +54,15 @@
       #{:not-hungry}
       +paip-bananas-ops+ )
 
+
+;;; 4.13 The Maze Searching Domain
+
+(def +paip-maze-ops+ (set (map convert-op paip.dom-maze/+available-ops+)))
+
+
+((timeout-fn gps 500) [[:at 1]] #{[:at 25]} +paip-maze-ops+)
+
+((timeout-fn gps-chap4-13 500) [[:at 1]] #{[:at 25]} +paip-maze-ops+)
 
 
 
