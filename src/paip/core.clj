@@ -42,4 +42,4 @@
   [ID indent format-string & args]
   (when (contains? +dbg-id*+ ID)
     (let [F (str "~&" "~v{~C~}" format-string)]
-      (apply pp/cl-format *err* F (list* indent (repeat \space) args)) )))
+      (apply pp/cl-format *err* F (list* indent (repeat \|) args)) )))
