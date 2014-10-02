@@ -76,9 +76,7 @@
           (is (gps-post? IS GS OP*1 OP*2)) )))))
 
 
-(comment
-   (run-tests)
-  )
+; (run-tests)
 
 
 

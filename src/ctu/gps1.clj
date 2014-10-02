@@ -99,13 +99,13 @@
                                          (and      (empty? (set/intersection (cget* N2 :cond*-inf) (del* (cget OA))))
                                               (not (empty? (set/intersection (cget* N2 :cond*-inf) (add* (cget OA))))) ))
                        :apply-op       (fn [N2 OA]
-                                          {:isa        :Node
-                                           :cond*-inf  (set/union (pre* (cget OA))
+                                          {:cond*-inf  (set/union (pre* (cget OA))
                                                                   (set/difference (cget* N2 :cond*-inf) (add* (cget OA))) )
                                           }
                                         )
                       }
-                 NG   {:isa        :Node
+                 NG   {:ref        NG
+                       :isa        :Node
                        :cond*-inf  GC*
                      }
                  }]
@@ -142,12 +142,12 @@
                        :domain-op*     (set (keys CTXT1))
                        :apply-op-pre?  #(apply-op-pre? (cget* %1 :cond*) (cget %2))
                        :apply-op       (fn [N OA]
-                                          {:isa    :Node
-                                           :cond*  (apply-op (cget* N :cond*) (cget OA))
+                                          {:cond*  (apply-op (cget* N :cond*) (cget OA))
                                           }
                                         )
                       }
                  N0   {:isa    :Node
+                       :ref    N0
                        :cond*  IC*
                      }
                  }]

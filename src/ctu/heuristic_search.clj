@@ -140,5 +140,8 @@
     (swap! *context* assoc PB NPB, OA NOA)
     OA ))
 
-
+(defn get-pb-id
+"get the problem id of a current *context*."
+  []
+  (some (fn [[K V]] (when (= :Find-Node-of-Generative-Graph-Problem (get V :isa)) K)) @*context*) )
 

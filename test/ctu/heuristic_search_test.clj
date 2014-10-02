@@ -89,7 +89,7 @@
     (init-context :PB)
     (testing "CASE : nominal"
       (let [N (add-node :G {:value 2})]
-        (is (= {:isa :Node, :value 2} (cget N)))
+        (is (= {:isa :Node, :ref N, :value 2} (cget N)))
         (is (contains? (cget* :G :node*) N))
       ))))
 
@@ -151,11 +151,16 @@
     ))
 
 
-(comment
+; (get-pb-id-tests)
+(deftest get-pb-id-tests
+  (testing "CASE : nominal"
+    (binding [*context* (atom +CTXT+)]
+      (is (= :PB (get-pb-id))) ))
+  (testing "CASE : not found"
+    (binding [*context* (atom (dissoc +CTXT+ :PB))]
+      (is (nil? (get-pb-id ))) )))
 
-  (run-tests)
-
-  )
+; (run-tests)
 
 
 
