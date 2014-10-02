@@ -86,8 +86,20 @@
   [ELTs]
   (= (count (set ELTs)) (count ELTs)) )
 
+; from stuart sierra
+; http://stackoverflow.com/questions/3407876/how-do-i-avoid-clojures-chunking-behavior-for-lazy-seqs-that-i-want-to-short-ci
+(defn unchunk [s]
+  (when (seq s)
+    (lazy-seq
+      (cons (first s)
+            (unchunk (next s))))))
 
-
+; utilities to check lazyness
+(def +effect-count+ (atom 0))
+(defn with-effect [x] (do (swap! +effect-count+ inc) x))
+; 1- (reset! effect-count 0)
+; 2- (def x (map with-effect lazy-form-to-test))
+; 3- @effect-count
 
 
 
