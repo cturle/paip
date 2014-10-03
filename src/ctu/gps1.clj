@@ -52,7 +52,7 @@
                   (isa OP2* vector-of Operation :| (every? [OPi OP*2] (set/contains? OP*1 OPi))
                                                    (set/superset? (reduce apply-op IC* OP*2) GC*) )))
 
-  * utilisation d'une recherche dans un graphe générique depuis le but vers l'état initial.
+  * utilisation d'une recherche dans un graphe générique depuis le but vers l'état initial (Backward chaining)
 
   * avec 'u'=union, '/'=set-diff, '^'=intersection, '0'=empty-set, '<='=included-in
   set-rule SR1 : X=A/B => X<=A and X^B=0
@@ -76,7 +76,9 @@
   * Ce qui nous donne :
   apply-op-pre (R10) : vérifier I*2^D=0
   heuristique à inclure dans apply-op-pre : not(I*2^A=0)
-  apply-op (R3,R9)   : I*1 = Pu(I*2/A) ; car I*1 = borne inf de C*1"
+  apply-op (R3,R9)   : I*1 = Pu(I*2/A) ; car I*1 = borne inf de C*1
+
+  Use breadth-first operator selection"
   ([IC* GC* OP*1]
     (gps IC* GC* OP*1 (atom nil)) )
   ([IC* GC* OP*1 CTXT]
@@ -146,8 +148,8 @@
                                           }
                                         )
                       }
-                 N0   {:isa    :Node
-                       :ref    N0
+                 N0   {:ref    N0
+                       :isa    :Node
                        :cond*  IC*
                      }
                  }]

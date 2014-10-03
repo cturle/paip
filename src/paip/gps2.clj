@@ -37,7 +37,8 @@
 (declare achieve-all achieve apply-op)
 
 (defn gps
-"General Problem Solver: from state S (init conditions), achieve goals G* (final conditions) using operators OP*."
+"General Problem Solver: from state S (init conditions), achieve goals G* (final conditions) using operators OP*.
+ Backward chaining with depth-first operator selection."
   ; note that state is now required to be a sequence (and not a set) due to implementation choice.
   [S G* OP*]
   (binding [*available-ops* OP*]

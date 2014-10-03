@@ -96,7 +96,8 @@
 (declare achieve appropriate? apply-op)
 
 (defn gps
-  "General Problem Solver: achieve all goals G* using operators O* from starting conditions SC*."
+  "General Problem Solver: achieve all goals G* using operators O* from starting conditions SC*.
+   Backward chaining with depth-first operator selection."
   [SC* G* O*]
   (binding [*current-state* SC*
             *available-ops* O*]
