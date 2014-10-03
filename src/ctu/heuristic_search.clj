@@ -4,7 +4,7 @@
 (declare init-context get-solution search-status? choose-next-node-and-operator apply-operator-on-node)
 
 (defn solve-by-heuristic-search
-  "Find-Node-of-Generative-Graph-Problem PB -> Boolean
+  "Contextual. Find-Node-of-Generative-Graph-Problem PB -> Boolean
    Solve PB.
    Returns false if no solution is found.
    Returns true if a solution N1 is found.
@@ -125,7 +125,7 @@
   N is a new Node added to the Graph G."
   [G NPPs]
   (let [N   (gensym "Node-"),
-        NN  (assoc NPPs :isa :Node)
+        NN  (assoc NPPs :isa :Node, :ref N)
         NG  (update-in (cget G) [:node*] conj N) ]
     (swap! *context* assoc G NG, N NN)
     N ))
@@ -139,6 +139,8 @@
         NPB (update-in (cget PB) [:op-apply-v] conj OA) ]
     (swap! *context* assoc PB NPB, OA NOA)
     OA ))
+
+(defn op-apply-v [PB] (cget-v PB :op-apply-v))
 
 (defn get-pb-id
 "get the problem id of a current *context*."
