@@ -4,22 +4,22 @@
             ))
 
 
-; (member?-tests)
-(deftest member?-tests
+; (contains?-tests)
+(deftest contains?-tests
   (testing "CASE : returns X"
-    (is (= :x1 (member? [:x1 :x2] :x1)))
-    (is (= :x2 (member? [:x1 :x2] :x2)))
-    (is (= :x1 (member? '(:x1 :x2) :x1)))
-    (is (= :x1 (member? #{:x1 :x2} :x1)))
+    (is (= :x1 (contains? [:x1 :x2] :x1)))
+    (is (= :x2 (contains? [:x1 :x2] :x2)))
+    (is (= :x1 (contains? '(:x1 :x2) :x1)))
+    (is (= :x1 (contains? #{:x1 :x2} :x1)))
    )
   (testing "CASE : returns nil"
-    (is (nil? (member? [:x1 :x2] :x3)))
-    (is (nil? (member? '(:x1 :x2) :x3)))
-    (is (nil? (member? #{:x1 :x2} :x3)))
-    (is (nil? (member? [] :x1)))
-    (is (nil? (member? '() :x1)))
-    (is (nil? (member? #{} :x1)))
-    (is (nil? (member? nil :x1)))
+    (is (nil? (contains? [:x1 :x2] :x3)))
+    (is (nil? (contains? '(:x1 :x2) :x3)))
+    (is (nil? (contains? #{:x1 :x2} :x3)))
+    (is (nil? (contains? [] :x1)))
+    (is (nil? (contains? '() :x1)))
+    (is (nil? (contains? #{} :x1)))
+    (is (nil? (contains? nil :x1)))
     ))
 
 ; (union-tests)

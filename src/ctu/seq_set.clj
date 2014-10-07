@@ -7,8 +7,8 @@
 
 (declare member? union intersection difference subset? superset?)
 
-(defn member?
-"Returns X if member of S elements, else returns nil."
+(defn contains?
+"Returns X if S contains X, else returns nil."
   [S X]
   (some #{X} S) )
 
