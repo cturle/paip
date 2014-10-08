@@ -1,8 +1,8 @@
 (ns paip.gps2
-  (require [clojure.set :as set]
-           [ctu.core  :refer :all]
+  (require [ctu.core  :refer :all]
+           [ctu.seq-set :as ss]
            [paip.core :refer :all]
-           [paip.gps1 :as v1 :refer [op-name add* del* pre*, *available-ops*]] ))
+           [paip.gps1 :as v1 :refer [op-name add* del* pre*]] ))
 
 
 ;;; ==============================
@@ -17,7 +17,7 @@
   [OP]
   (if (some executing? (add* OP))
     OP
-    (update-in OP [:add-list] conj [:executing (op-name OP)]) ))
+    (update-in OP [:add-list] add-front [:executing (op-name OP)]) ))
 
 (defn op
 "Make a new operator that obeys the (:executing op-name) convention."
@@ -27,22 +27,16 @@
 
 ;;; ==============================
 
-; other program may need the original more declarative definition.
-(def +paip-school-ops+ (set (map convert-op v1/+school-ops+)))
-
-;;; ==============================
-
-; *ops* : re-using v1/*available-ops*
+; *ops* : defined in test or repl files
 
 (declare achieve-all achieve apply-op)
 
 (defn gps
 "General Problem Solver: from state S (init conditions), achieve goals G* (final conditions) using operators OP*.
  Backward chaining with depth-first operator selection."
-  ; note that state is now required to be a sequence (and not a set) due to implementation choice.
   [S G* OP*]
   (binding [*available-ops* OP*]
-    (when-let [AA (achieve-all (cons [:start] S) G* '())]
+    (when-let [AA (achieve-all (add-front S [:start]) G* [])]
       (filter coll? AA) )))
 
 ;;; ==============================
@@ -53,17 +47,17 @@
  ; very imperative but stick to original definition
  (with-local-vars [CURRENT-STATE S]
    (if (and (every? #(var-set CURRENT-STATE (achieve @CURRENT-STATE % G-STACK)) G*)
-            (set/subset? (set G*) (set @CURRENT-STATE)) )
+            (ss/subset? G* @CURRENT-STATE) )
         @CURRENT-STATE )))
 
 (defn achieve
 "A goal G is achieved from state S if it already holds, or if there is an appropriate op for it that is applicable."
   [S G G-STACK]
   (dbg-indent :gps (count G-STACK) "Goal: ~a" G)
-  (cond (some #(= G %) S)
+  (cond (ss/contains? S G)
           (do (dbg-indent :gps (count G-STACK) "OK: Goal in current state")
               S )
-        (some #(= G %) G-STACK)
+        (ss/contains? G-STACK G)
           (do (dbg-indent :gps (count G-STACK) "CANCEL : Goal in stack")
               nil )
         true
@@ -72,11 +66,7 @@
             NS
             (dbg-indent :gps (count G-STACK) "CANCEL : No operator found") )))
 
-;;; ==============================
-
 ; member-equal not needed :default behavior of contains?
-
-;;; ==============================
 
 (defn apply-op
 "Return a new, transformed state if OP is applicable."
@@ -85,16 +75,16 @@
   (when (Thread/interrupted)
     (throw (ex-info "interruption in apply-op")) )
   (dbg-indent :gps (count G-STACK) "Consider: ~a" (op-name OP))
-  (let [NS (achieve-all S (pre* OP) (cons G G-STACK))]
+  (let [NS (achieve-all S (pre* OP) (add-front G-STACK G))]
     (when-not (nil? NS)
       ;; Return an updated state
       (dbg-indent :gps (count G-STACK) "Action: ~a" (op-name OP))
-      (concat (remove #(contains? (del* OP) %) NS) (add* OP)) )))
+      (ss/union (ss/difference NS (del* OP)) (add* OP)) )))
 
 
 ;;; ==============================
 
-(def +current-used-ops+ (atom #{}))
+(def +current-used-ops+ (atom []))
 
 (defn use-ops [OP*]
   (reset! +current-used-ops+ OP*) )
@@ -108,13 +98,14 @@
    (gps-chap4-13 S G* @+current-used-ops+) )
   ([S G* OP*]
    (binding [*available-ops* OP*]
-     (when-let [AA (achieve-all (cons [:start] S) G* '())]
+     (when-let [AA (achieve-all (add-front S [:start]) G* [])]
        (filter action? AA) ))))
 
 (defn action?
 "Is X something that is [:start] or [:executing ...] ?"
   [X]
   (or (= X [:start]) (executing? X)) )
+
 
 (declare destination)
 
