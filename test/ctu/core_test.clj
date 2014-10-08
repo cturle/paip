@@ -88,10 +88,22 @@
     (is (not (all-distinct? [:a :a :b])))
     (is (not (all-distinct? [[:a] [:a]]))) ))
 
-
-(comment
-  (run-tests)
+; (add-front-tests)
+(deftest add-front-tests
+  (is (= [:x1] (add-front [] :x1)))
+  (is (= [:x2 :x1] (add-front  [:x1] :x2)))
+  (is (= [:x2 :x1] (add-front '(:x1) :x2)))
   )
+
+; (add-back-tests)
+(deftest add-back-tests
+  (is (= [:x1] (add-back [] :x1)))
+  (is (= [:x1 :x2] (add-back  [:x1] :x2)))
+  (is (= [:x1 :x2] (add-back '(:x1) :x2)))
+  )
+
+
+; (run-tests)
 
 
 
