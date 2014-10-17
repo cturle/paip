@@ -30,16 +30,20 @@
 
 (defn dbg
 "Print debugging info if debug id ID has been specified (with debug).
- Printing is done with cl-format on *err* stream."
+ Printing is done with cl-format on *err* stream.
+ Return nil."
   [ID format-string & args]
   (when (contains? +dbg-id*+ ID)
     (let [F (str "~&" format-string)]
-      (apply pp/cl-format *err* F args) )))
+      (apply pp/cl-format *err* F args)
+      nil )))
 
 (defn dbg-indent
 "Print indented debugging info if debug id ID has been specified (with debug).
- Printing is done with cl-format on *err* stream."
+ Printing is done with cl-format on *err* stream.
+ Return nil."
   [ID indent format-string & args]
   (when (contains? +dbg-id*+ ID)
     (let [F (str "~&" "~v{~C~}" format-string)]
-      (apply pp/cl-format *err* F (list* indent (repeat \|) args)) )))
+      (apply pp/cl-format *err* F (list* indent (repeat \|) args))
+      nil )))

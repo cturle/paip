@@ -2,7 +2,7 @@
   (require [ctu.core  :refer :all]
            [ctu.seq-set :as ss]
            [paip.core :refer :all]
-           [paip.gps1 :as v1 :refer [op-name add* del* pre*]] ))
+           [paip.gps1 :as v1 :refer [*available-ops* op-name add* del* pre*]] ))
 
 
 ;;; ==============================
@@ -29,12 +29,13 @@
 
 ; *ops* : defined in test or repl files
 
-(declare achieve-all achieve apply-op)
+(declare achieve-all *appropriate-ops* apply-op)
 
 (defn gps
 "General Problem Solver: from state S (init conditions), achieve goals G* (final conditions) using operators OP*.
  Backward chaining with depth-first operator selection."
   [S G* OP*]
+  (dbg :gps "START : GPS")
   (binding [*available-ops* OP*]
     (when-let [AA (achieve-all (add-front S [:start]) G* [])]
       (filter coll? AA) )))
@@ -47,7 +48,8 @@
  ; very imperative but stick to original definition
  (with-local-vars [CURRENT-STATE S]
    (if (and (every? #(var-set CURRENT-STATE (achieve @CURRENT-STATE % G-STACK)) G*)
-            (ss/subset? G* @CURRENT-STATE) )
+            (or (ss/subset? G* @CURRENT-STATE)
+                (dbg-indent :gps (count G-STACK) "CANCEL : All goals no more achieved") ))
         @CURRENT-STATE )))
 
 (defn achieve
@@ -58,13 +60,17 @@
           (do (dbg-indent :gps (count G-STACK) "OK: Goal in current state")
               S )
         (ss/contains? G-STACK G)
-          (do (dbg-indent :gps (count G-STACK) "CANCEL : Goal in stack")
-              nil )
+          (dbg-indent :gps (count G-STACK) "CANCEL : Goal in stack")
         true
-          (if-let [NS (some #(apply-op S G % G-STACK)
-                            (filter #(v1/appropriate? G %) *available-ops*) )]
-            NS
-            (dbg-indent :gps (count G-STACK) "CANCEL : No operator found") )))
+          (or (some #(apply-op S G % G-STACK) (*appropriate-ops* G S))
+              (dbg-indent :gps (count G-STACK) "CANCEL : No operator found") )))
+
+(defn appropriate-ops [G S]
+  (filter #(v1/appropriate? G %) *available-ops*) )
+
+; to contextualize the 'achieve' function
+(def ^:dynamic *appropriate-ops* appropriate-ops)
+
 
 ; member-equal not needed :default behavior of contains?
 
@@ -91,14 +97,18 @@
 
 (declare action?)
 
+; to contextualize the 'achieve-all' function
+(def ^:dynamic *achieve-all* achieve-all)
+
 (defn gps-chap4-13
 "General Problem Solver: from state S (init conditions), achieve goals G* (final conditions) using operators OP*."
   ; note that state is now required to be a sequence (and not a set) due to implementation choice.
   ([S G*]
    (gps-chap4-13 S G* @+current-used-ops+) )
   ([S G* OP*]
+   (dbg :gps "START : GPS")
    (binding [*available-ops* OP*]
-     (when-let [AA (achieve-all (add-front S [:start]) G* [])]
+     (when-let [AA (*achieve-all* (add-front S [:start]) G* [])]
        (filter action? AA) ))))
 
 (defn action?
@@ -120,6 +130,40 @@
 "Find the Y in [:executing [:move :from X :to Y]]"
   [ACTION]
   (nth (second ACTION) 4) )
+
+(declare orderings)
+
+; to call 'achieve-all-with-orderings' instead of 'achieve-all' in gps-chap4-13,
+; use (binding [*achieve-all* achieve-all-with-orderings] (gps-chap4-13 ...))
+(defn achieve-all-with-orderings
+"Achieve each goal, trying several orderings."
+  [S G* G-STACK]
+  (some #(achieve-all S % G-STACK) (orderings G*)) )
+
+
+(defn orderings [L]
+  (if (> (count L) 1)
+    (list L (reverse L))
+    (list L) ))
+
+;;; p141
+
+(defn appropriate-ops-chap4-14
+"Return a list of appropriate operators for the goal G, sorted by the number of unfulfilled preconditions
+ relative to the State S (ascending)."
+  [G S]
+  (sort-by (fn [OP] (count (filter #(not (ss/contains? S %)) (pre* OP))))
+           (filter #(v1/appropriate? G %) *available-ops*) ))
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -4,10 +4,9 @@
   (:require [clojure.test :refer :all]
             [ctu.core :refer :all]
             [paip.core :refer :all]
-            [paip.gps1 :refer [op-name, add*, del*, pre*]]
+            [paip.gps1 :refer [*available-ops* op-name, add*, del*, pre*]]
             [paip.gps2 :refer :all]
             [paip.dom-school], [paip.dom-bananas], [paip.dom-maze], [paip.dom-blocks :refer [make-block-ops]] ))
-
 
 ; (executing?-tests)
 (deftest executing?-tests
@@ -86,16 +85,16 @@
       (is (= [[:start] [:executing [:move :a :from :table :to :b]]]
              (GPS [[:a :on :table] [:b :on :table] [:space :on :a] [:space :on :b] [:space :on :table]]
                   [[:a :on :b] [:b :on :table]]
-                  (map convert-op (paip.dom-blocks/make-block-ops [:a :b])) )))
+                  (map convert-op (make-block-ops [:a :b])) )))
       (is (= [[:start] [:executing [:move :a :from :b :to :table]] [:executing [:move :b :from :table :to :a]]]
              (GPS [[:a :on :b] [:b :on :table] [:space :on :a] [:space :on :table]]
                   [[:b :on :a]]
-                  (map convert-op (paip.dom-blocks/make-block-ops [:a :b])) )))
+                  (map convert-op (make-block-ops [:a :b])) )))
       (is (= [[:start] [:executing [:move :a :from :b :to :table]] [:executing [:move :b :from :c :to :a]]
               [:executing [:move :c :from :table :to :b]] ]
              (GPS [[:a :on :b] [:b :on :c] [:c :on :table] [:space :on :a] [:space :on :table]]
                   [[:b :on :a] [:c :on :b]]
-                  (map convert-op (paip.dom-blocks/make-block-ops [:a :b :c])) ))))
+                  (map convert-op (make-block-ops [:a :b :c])) ))))
       ))
 
 ; (destination-tests)
@@ -121,6 +120,77 @@
             [:move :a :from :table :to :b] ]
            (map op-name (make-block-ops [:a :b])) ))))
 
+; (orderings-tests)
+(deftest orderings-tests
+  (testing "CASE : nominal"
+    (is (= [[:a :b] [:b :a]] (orderings [:a :b])))
+    (is (= [[:a]] (orderings [:a])))
+    ))
+
+; (appropriate-ops-tests)
+(deftest appropriate-ops-tests
+  (binding [*available-ops* (make-block-ops [:a :b :c])]
+    (testing "CASE : first version"
+      (is (= [[:move :c :from :b :to :table] [:move :c :from :a :to :table]]
+             (map op-name
+                  (appropriate-ops [:c :on :table]
+                                   [[:c :on :a] [:a :on :table] [:b :on :table]
+                                    [:space :on :c] [:space :on :b] [:space :on :table]] )))))
+    (testing "CASE : 2nd version ordered by pre-conditions not already satisfied"
+      (is (= [[:move :c :from :a :to :table] [:move :c :from :b :to :table]]
+             (map op-name
+                  (appropriate-ops-chap4-14 [:c :on :table]
+                                            [[:c :on :a] [:a :on :table] [:b :on :table]
+                                             [:space :on :c] [:space :on :b] [:space :on :table]] )))))))
+
+; (gps-chap4-14-tests)
+(deftest gps-chap4-14-tests
+  (let [GPS         (timeout-fn gps-chap4-13 500)
+        BLOCK-OP*   (map convert-op (make-block-ops [:a :b :c])) ]
+    (testing "CASE : goal & operators orderings"
+      (binding [*achieve-all*      achieve-all-with-orderings
+                *appropriate-ops*  appropriate-ops-chap4-14]
+        (is (= [[:start] [:executing [:move :c :from :a :to :table]] [:executing [:move :a :from :table :to :b]]]
+               (GPS [[:c :on :a] [:a :on :table] [:b :on :table] [:space :on :c] [:space :on :b] [:space :on :table]]
+                    [[:c :on :table] [:a :on :b]]
+                    BLOCK-OP* )))
+        (is (= [[:start] [:executing [:move :a :from :b :to :table]] [:executing [:move :b :from :c :to :a]]
+                         [:executing [:move :c :from :table :to :b]]]
+               (GPS [[:a :on :b] [:b :on :c] [:c :on :table] [:space :on :a] [:space :on :table]]
+                    [[:b :on :a] [:c :on :b]]
+                    BLOCK-OP* )))
+        ; it is there where the 'achieve-all-with-orderings' is usefull
+        (is (= [[:start] [:executing [:move :a :from :b :to :table]] [:executing [:move :b :from :c :to :a]]
+                         [:executing [:move :c :from :table :to :b]] ]
+               (GPS [[:a :on :b] [:b :on :c] [:c :on :table] [:space :on :a] [:space :on :table]]
+                    [[:c :on :b] [:b :on :a]]
+                    BLOCK-OP* )))
+      ))))
+
+
+; 4.15 Stage 5 Repeated: Analysis of Version 2
+
+
 
 ; (run-tests)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

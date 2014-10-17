@@ -4,11 +4,11 @@
   (:require [clojure.inspector :refer :all]
             [ctu.core :refer :all]
             [paip.core :refer :all]
+            [paip.gps1 :refer [*available-ops* op-name add* del* pre*]]
             [paip.gps2 :refer :all]
             [paip.dom-school], [paip.dom-bananas], [paip.dom-maze], [paip.dom-blocks]
             [clojure.tools.trace :refer :all]
             [clojure.repl :refer :all] ))
-
 
 ;;; 4.11 GPS Version 2: A More General Problem Solver
 
@@ -99,13 +99,63 @@
                                 [[:c :on :b] [:b :on :a]] )
 
 
-;;; suite p139
+;;; p139
+
+(binding [*achieve-all* achieve-all]
+  ((timeout-fn gps-chap4-13 1000) [[:a :on :b] [:b :on :c] [:c :on :table] [:space :on :a] [:space :on :table]]
+                                  [[:c :on :b] [:b :on :a]] ))
+
+(binding [*achieve-all* achieve-all-with-orderings]
+  ((timeout-fn gps-chap4-13 1000) [[:a :on :b] [:b :on :c] [:c :on :table] [:space :on :a] [:space :on :table]]
+                                  [[:c :on :b] [:b :on :a]] ))
+
+;;; p140 : the efficiency of solutions
+
+(binding [*achieve-all* achieve-all-with-orderings]
+  ((timeout-fn gps-chap4-13 1000) [[:c :on :a] [:a :on :table] [:b :on :table] [:space :on :c] [:space :on :b] [:space :on :table]]
+                                  [[:c :on :table]] ))
+
+;
+(binding [*achieve-all* achieve-all-with-orderings]
+  ((timeout-fn gps-chap4-13 1000) [[:c :on :a] [:a :on :table] [:b :on :table] [:space :on :c] [:space :on :b] [:space :on :table]]
+                                  [[:c :on :table] [:a :on :b]] ))
 
 
+(binding [*achieve-all*      achieve-all-with-orderings
+          *appropriate-ops*  appropriate-ops-chap4-14 ]
+  ((timeout-fn gps-chap4-13 1000) [[:c :on :a] [:a :on :table] [:b :on :table] [:space :on :c] [:space :on :b] [:space :on :table]]
+                                  [[:c :on :table] [:a :on :b]] ))
+
+(binding [*achieve-all*      achieve-all-with-orderings
+          *appropriate-ops*  appropriate-ops-chap4-14 ]
+  ((timeout-fn gps-chap4-13 1000) [[:a :on :b] [:b :on :c] [:c :on :table] [:space :on :a] [:space :on :table]]
+                                  [[:b :on :a] [:c :on :b]] ))
+
+(binding [*achieve-all*      achieve-all-with-orderings
+          *appropriate-ops*  appropriate-ops-chap4-14 ]
+  ((timeout-fn gps-chap4-13 1000) [[:a :on :b] [:b :on :c] [:c :on :table] [:space :on :a] [:space :on :table]]
+                                  [[:c :on :b] [:b :on :a]] ))
 
 
+; The Sussman Anomaly
 
+(def start [[:c :on :a] [:a :on :table] [:b :on :table] [:space :on :c] [:space :on :b] [:space :on :table]])
 
+(debug :gps)
+
+(binding [*achieve-all*      achieve-all-with-orderings
+          *appropriate-ops*  appropriate-ops-chap4-14 ]
+  ((timeout-fn gps-chap4-13 1000) start
+                                  [[:a :on :b] [:b :on :c]] ))
+
+(binding [*achieve-all*      achieve-all-with-orderings
+          *appropriate-ops*  appropriate-ops-chap4-14 ]
+  ((timeout-fn gps-chap4-13 1000) start
+                                  [[:b :on :c] [:a :on :b]] ))
+
+(undebug)
+
+; 4.15 Stage 5 Repeated: Analysis of Version 2
 
 
 

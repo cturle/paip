@@ -20,9 +20,10 @@ Chapters :
   4.11. : GPS Version 2: A More General Problem Solver : **implemented**
   4.12. : The New Domain Problem: Monkey and Bananas : **implemented**
   4.13. : The Maze Searching Domain : **implemented**
+  4.14. : The Blocks World Domain : **implemented**
 
 
-Last updated : 2014-09-30
+Last updated : 2014-10-17
 
 ## Usage
 
