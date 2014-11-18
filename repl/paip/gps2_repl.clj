@@ -155,8 +155,22 @@
 
 (undebug)
 
-; 4.15 Stage 5 Repeated: Analysis of Version 2
+; 4.16 The Not Looking after You Don't Leap Problem
 
+(use-ops (add-front paip.dom-school/+available-ops+
+                    {:action   :taxi-son-to-school
+                     :preconds [:son-at-home :have-money]
+                     :add-list [:son-at-school]
+                     :del-list [:son-at-home :have-money] }))
+
+(debug :gps)
+
+(binding [*achieve-all*      achieve-all-with-orderings
+          *appropriate-ops*  appropriate-ops-chap4-14 ]
+  ((timeout-fn gps-chap4-13 1000) [:son-at-home :have-money :car-works]
+                                  [:son-at-school :have-money] ))
+
+; look at the console TAB to see trace
 
 
 
