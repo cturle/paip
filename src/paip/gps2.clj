@@ -29,7 +29,7 @@
 
 ; *ops* : defined in test or repl files
 
-(declare achieve-all *appropriate-ops* apply-op)
+(declare achieve achieve-all ^:dynamic *appropriate-ops* apply-op)
 
 (defn gps
 "General Problem Solver: from state S (init conditions), achieve goals G* (final conditions) using operators OP*.

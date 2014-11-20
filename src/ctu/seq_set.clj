@@ -1,5 +1,5 @@
 (ns ctu.seq-set
-  (require [clojure.core :exclude [contains? conj disj]]) )
+  (:refer-clojure :exclude [contains? conj disj]) )
 
 ; === set functions on sequence ===
 ; why not to use clojure set directly ?
