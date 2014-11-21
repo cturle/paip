@@ -2,7 +2,7 @@
 
 A Clojure library designed to define in clojure what you find in PAIP (Paradigms Of Artificial Intelligence Programming - Case Studies In Common Lisp, Peter Norvig)
 
-Actually Chapter 2 and parts of Chapter 4 (GPS1, GPS2) are implemented.
+Actually Chapter 2 and Chapter 4 (GPS1, GPS2) are implemented.
 
 Chapters :
 
@@ -23,8 +23,9 @@ Chapters :
   4.14. : The Blocks World Domain : **implemented**
   4.15. : Stage 5 Repeated: Analysis of Version 2 : no code
   4.16. : The Not Looking after You Don't Leap Problem : **implemented**
+  4.17. => 4.21 : no code just discussion
 
-Last updated : 2014-11-18
+Last updated : 2014-11-21
 
 ## Usage
 
