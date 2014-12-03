@@ -47,7 +47,7 @@
   (trace-ns 'paip.chap2)
   (sentence)
   ; look at the light table console
-
+  (untrace-ns 'paip.chap2)
   )
 
 
@@ -96,6 +96,8 @@
 
 ; utilisation
 (comment
+  (adj*)
+  (pp*)
   (sentence-2)
   )
 
@@ -131,9 +133,9 @@
   (use 'clojure.tools.trace)
   (trace-ns 'paip.chap2)
   (generate 'Sentence)
-  (generate 'Sentence)
   (generate 'Noun-Phrase)
   (generate 'Verb-Phrase)
+  (untrace-ns 'paip.chap2)
 )
 
 
@@ -151,7 +153,7 @@
 (comment
   (trace-vars generate-2)
   (generate-2 'Sentence)
-  (generate-2 'Sentence)
+  (untrace-vars generate-2)
 )
 
 
@@ -168,6 +170,7 @@
 (comment
   (trace-vars generate-3)
   (generate-3 'Sentence)
+  (untrace-vars generate-3)
 )
 
 
@@ -189,6 +192,7 @@
 (comment
   (trace-vars generate-4)
   (generate-4 'Sentence)
+  (untrace-vars generate-4)
 )
 
 
@@ -263,6 +267,7 @@
   (generate-4 'Sentence)
   (generate-4 'PP*)
   (generate-4 'Article)
+  (untrace-vars generate-4)
   )
 
 
@@ -314,6 +319,7 @@
   (generate-6 'PP*)
   (generate-6 :nothing)
   (generate-6 'Sentence)
+  (untrace-vars generate-6)
 )
 
 ; === Chap 2.6
@@ -329,6 +335,7 @@
   (use 'clojure.tools.trace)
   (trace-vars generate-tree)
   (generate-tree 'Sentence)
+  (untrace-vars generate-tree)
  )
 
 ; with explicit-grammar
@@ -361,6 +368,7 @@
   (generate-tree-2 'PP)
   (generate-tree-2 'PP*)
   (first (generate-tree-2 'Sentence))
+  (untrace-vars generate-tree-2)
 )
 
 ; === generate all possible rewrites of a phrase
@@ -391,7 +399,7 @@ E.g., (combine-all '((a) (b)) '((1) (2)))
   (generate-all 'Noun-Phrase)
   (count (generate-all 'Sentence))
   (reset! Grammar '{Test [[Article] [Article]], Article [a the]})
-  ; note the doublon in the below : ((a) (the) (a) (the))
+  ; note the doublon in the result below : ((a) (the) (a) (the))
   (generate-all 'Test)
   ; note that we can't call Test rewriting : ((a a) (the a) (a the) (the the))
   (generate-all '[[Article] [Article]])
