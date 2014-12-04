@@ -1,6 +1,6 @@
 # PAIP
 
-A Clojure library designed to define in clojure what you find in PAIP (Paradigms Of Artificial Intelligence Programming - Case Studies In Common Lisp, Peter Norvig)
+Clojure code of PAIP (Paradigms Of Artificial Intelligence Programming - Case Studies In Common Lisp, Peter Norvig)
 
 Actually Chapter 2 and Chapter 4 (GPS1, GPS2) are implemented.
 
@@ -8,24 +8,24 @@ Chapters :
 
 1. : Introduction to Lisp : *lisp specific, not implemented*.
 2. : A Sample Lisp Program
-  2.2. : A Straightforward Solution : **implemented**.
-  2.3. : A Rule-Based Solution : **implemented**.
-  2.4. : Two Paths to Follow : no code
-  2.5. : Changing the Grammar without Changing the Program : **implemented**
-  2.6. : Using the Same Data for Several Programs : **implemented**
+  2.2 : A Straightforward Solution : **implemented**.
+  2.3 : A Rule-Based Solution : **implemented**.
+  2.4 : Two Paths to Follow : *no code*
+  2.5 : Changing the Grammar without Changing the Program : **implemented**
+  2.6 : Using the Same Data for Several Programs : **implemented**
 3. : Overview of Lisp : *lisp specific*
 4. : GPS: The General Problem Solver
-  4.1. => 4.9 : GPS1 : **implemented**
-  4.10. : The Lack of Intermediate Information Problem : **implemented**
-  4.11. : GPS Version 2: A More General Problem Solver : **implemented**
-  4.12. : The New Domain Problem: Monkey and Bananas : **implemented**
-  4.13. : The Maze Searching Domain : **implemented**
-  4.14. : The Blocks World Domain : **implemented**
-  4.15. : Stage 5 Repeated: Analysis of Version 2 : no code
-  4.16. : The Not Looking after You Don't Leap Problem : **implemented**
-  4.17. => 4.21 : no code just discussion
+  4.1 => 4.9 : GPS1 : **implemented**
+  4.10 : The Lack of Intermediate Information Problem : **implemented**
+  4.11 : GPS Version 2: A More General Problem Solver : **implemented**
+  4.12 : The New Domain Problem: Monkey and Bananas : **implemented**
+  4.13 : The Maze Searching Domain : **implemented**
+  4.14 : The Blocks World Domain : **implemented**
+  4.15 : Stage 5 Repeated: Analysis of Version 2 : *no code*
+  4.16 : The Not Looking after You Don't Leap Problem : **implemented**
+  4.17 => 4.21 : *no code*
 
-Last updated : 2014-11-21
+Last updated : 2014-12-03
 
 ## Usage
 
@@ -60,7 +60,7 @@ repl session is in repl/paip/gps1_repl.clj
 
 ## Running GPS2 (§4.10 => §4.16)
 
-like running GPS1 but with gps2 files
+like running GPS1 but with GPS2 files
 
 
 ## License
