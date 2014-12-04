@@ -46,7 +46,7 @@
 
 (defn gps
   "General Problem Solver :
-  [set-of Condition IC*, set-of Condition GC*, set-of Operation OP*1] -> (or False, list-of Operation) OPNv
+  [oset-of Condition IC*, oset-of Condition GC*, oset-of Operation OP*1] -> (or False, list-of Operation) OPNv
   post : (or (false? OPNv)
              (and (= OPNv (mapv op-name OP2*))
                   (isa OP2* vector-of Operation :| (every? [OPi OP*2] (set/contains? OP*1 OPi))
@@ -82,11 +82,12 @@
   ([IC* GC* OP*1]
     (gps IC* GC* OP*1 (atom nil)) )
   ([IC* GC* OP*1 CTXT]
-    (let [CTXT1  (zipmap (repeatedly #(gensym "Operation")) OP*1)
-          NG  (gensym "Node-")
-          D   (gensym "Definition-")
-          G   (gensym "Graph-")
-          PB  (gensym "Problem-")
+    (let [OPN-s  (repeatedly (count OP*1) #(gensym "Operation-"))
+          CTXT1  (zipmap  OPN-s OP*1)
+          NG     (gensym "Node-")
+          D      (gensym "Definition-")
+          G      (gensym "Graph-")
+          PB     (gensym "Problem-")
           CTXT2 {PB   {:isa    :Find-Node-of-Generative-Graph-Problem
                        :graph  G
                        :pred   #(set/subset? (cget* % :cond*-inf) IC*)
@@ -96,7 +97,7 @@
                       }
                  D    {:isa            :Graph-Generative-Definition
                        :start-node     NG
-                       :domain-op*     (set (keys CTXT1))
+                       :domain-op-s    OPN-s
                        :apply-op-pre?  (fn [N2 OA]
                                          (and      (empty? (set/intersection (cget* N2 :cond*-inf) (del* (cget OA))))
                                               (not (empty? (set/intersection (cget* N2 :cond*-inf) (add* (cget OA))))) ))

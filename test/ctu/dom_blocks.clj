@@ -88,6 +88,12 @@
  [isa ?C Cube]
  (= 1 (card ((filter-kb [sur ?C ?]) (kb S1)))) )
 
+->
+((partial = 1) (card ((filter-kb [sur ?C ?]) (kb S1))))
+->
+((comp (partial = 1) card (filter-kb [sur ?C ?]) kb) S1)
+
+
 ; si on demandait à simplifier maintenant :
 (simplify S1)
 

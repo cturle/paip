@@ -1,6 +1,13 @@
 (ns ctu.heuristic-search
   (:require [ctu.core :refer :all]) )
 
+; The problem space is searched to accomplish the task to construct the symbolic object that is desired.
+
+; acts of deliberation :
+; select a problem space to work in, to select a state within that problem space (if more than one is available),
+; to select an operator of the space to apply to the selected state, and then to apply that operator to the state
+; to take a step in the space.
+
 (declare init-context get-solution search-status? choose-next-node-and-operator apply-operator-on-node)
 
 (defn solve-by-heuristic-search
@@ -135,7 +142,7 @@
   OA is a new Op-Apply "
   [PB OAPPs]
   (let [OA  (gensym "OpApply-")
-        NOA (merge OAPPs {:isa :Op-Apply})
+        NOA (merge OAPPs {:isa :Op-Apply, :ref OA})
         NPB (update-in (cget PB) [:op-apply-v] conj OA) ]
     (swap! *context* assoc PB NPB, OA NOA)
     OA ))

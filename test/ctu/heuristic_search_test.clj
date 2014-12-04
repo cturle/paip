@@ -13,7 +13,7 @@
                    }
               :D   {:isa            :Graph-Generative-Definition
                     :start-node     :N0
-                    :domain-op*     #{:A1 :A2}
+                    :domain-op*     [:A1 :A2]
                     :apply-op-pre?  (constantly true)
                     :apply-op       (fn [N OP] {:value  ((cget OP :fn) (cget N :value))})
                    }
