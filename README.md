@@ -44,19 +44,17 @@ Tools used are listed below. All in this project assume you are using them too :
 
 ## Running GPS1 (§4.1 => §4.9)
 
-code is in src/paip/gps1.clj
-tests are in test/paip/gps1_test.clj
-repl session is in repl/paip/gps1_repl.clj
+Code is in 'src/paip/gps1.clj', tests are in 'test/paip/gps1_test.clj' and repl session is in 'repl/paip/gps1_repl.clj'
 
 1. clone this repository
 2. test code
-    2.1. open test/paip/gps1_test.clj
-    2.2. eval the buffer (ctrl+shift+enter)
-    2.3. select '(run-tests)' and ctrl-enter to run all tests. Check console tab to see results.
-    2.4. you can also run lein test
+  2.1 open test/paip/gps1_test.clj
+  2.2 eval the buffer (ctrl+shift+enter)
+  2.3 select '(run-tests)' and ctrl-enter to run all tests. Check console tab to see results.
+  2.4 you can also run lein test
 3. play with code
-    1. open repl/paip/gps1_repl.clj
-    2. eval lines as you go
+  1 open repl/paip/gps1_repl.clj
+  2 eval lines as you go
 
 ## Running GPS2 (§4.10 => §4.16)
 
