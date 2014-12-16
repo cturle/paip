@@ -19,7 +19,7 @@
   (remove (partial = X) S) )
 
 (defn conj
-  "Returns (clojure.core/conj S X) if (contains? S X), else returns S."
+  "Returns (clojure.core/conj S X) if not (contains? S X), else returns S."
   [S X]
   (if (contains? S X) S (clojure.core/conj S X)) )
 
